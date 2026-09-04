@@ -1,0 +1,769 @@
+<!DOCTYPE html>
+<html lang="ko" class="dark" id="htmlRoot">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>피부과학 제7판 전문의 보드 마스터</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#eef2ff',
+              100: '#e0e7ff',
+              500: '#6366f1',
+              600: '#4f46e5',
+              700: '#4338ca',
+              900: '#312e81'
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- Firebase SDK (v10 Compat) -->
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+
+  <style>
+    .perspective-1000 { perspective: 1200px; }
+    .transform-style-3d { transform-style: preserve-3d; }
+    .backface-hidden { backface-visibility: hidden; }
+    .rotate-y-180 { transform: rotateY(180deg); }
+    /* 모바일 탭 시 파란 하이라이트 방지 */
+    * { -webkit-tap-highlight-color: transparent; }
+    /* 커스텀 스크롤바 */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(148, 163, 184, 0.3); border-radius: 9999px; }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(148, 163, 184, 0.5); }
+  </style>
+</head>
+<body class="bg-slate-100 dark:bg-slate-950 text-slate-800 dark:text-slate-100 min-h-screen flex flex-col font-sans transition-colors duration-200">
+
+  <!-- TOP HEADER -->
+  <header class="bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 sticky top-0 z-40 transition-colors">
+    <div class="max-w-5xl mx-auto px-4 py-2.5 flex justify-between items-center">
+      
+      <!-- Logo & Title -->
+      <div class="flex items-center gap-2.5">
+        <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-indigo-600 to-violet-500 flex items-center justify-center shadow-md shadow-indigo-500/20 text-white font-bold">
+          <i class="fa-solid fa-dna text-base"></i>
+        </div>
+        <div>
+          <div class="flex items-center gap-1.5">
+            <h1 class="text-sm sm:text-base font-bold text-slate-900 dark:text-white tracking-tight">피부과학 제7판</h1>
+            <span class="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-indigo-100 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300">전문의 대비</span>
+          </div>
+          <p class="text-[11px] text-slate-500 dark:text-slate-400">Board Exam Mastery Flashcards</p>
+        </div>
+      </div>
+
+      <!-- Header Right: Sync Status & Theme Toggle -->
+      <div class="flex items-center gap-2">
+        <div id="syncBadge" class="text-xs px-2.5 py-1 rounded-full bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-300 flex items-center gap-1.5 font-medium border border-slate-300/60 dark:border-slate-700">
+          <span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
+          <span class="hidden sm:inline">동기화 대기</span>
+        </div>
+
+        <button onclick="toggleTheme()" class="w-9 h-9 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-amber-400 flex items-center justify-center border border-slate-200 dark:border-slate-700 transition" title="다크/라이트 모드 전환">
+          <i id="themeIcon" class="fa-solid fa-moon"></i>
+        </button>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- NAVIGATION & ACTION BAR -->
+  <div class="max-w-5xl w-full mx-auto px-4 mt-4 flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-2.5">
+    <!-- Mode Tabs -->
+    <nav class="flex bg-slate-200/80 dark:bg-slate-900 p-1 rounded-xl border border-slate-300/70 dark:border-slate-800 self-start sm:self-auto w-full sm:w-auto">
+      <button id="navStudy" onclick="setTab('study')" class="flex-1 sm:flex-initial px-3.5 py-1.5 text-xs sm:text-sm font-bold rounded-lg bg-white dark:bg-indigo-600 text-indigo-700 dark:text-white shadow-sm transition flex items-center justify-center gap-2">
+        <i class="fa-solid fa-layer-group"></i> <span>암기 테스트</span>
+      </button>
+      <button id="navStats" onclick="setTab('stats')" class="flex-1 sm:flex-initial px-3.5 py-1.5 text-xs sm:text-sm font-semibold rounded-lg text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition flex items-center justify-center gap-2">
+        <i class="fa-solid fa-chart-pie"></i> <span>진도율</span>
+      </button>
+      <button id="navList" onclick="setTab('list')" class="flex-1 sm:flex-initial px-3.5 py-1.5 text-xs sm:text-sm font-semibold rounded-lg text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition flex items-center justify-center gap-2">
+        <i class="fa-solid fa-table-list"></i> <span>카드 목록</span>
+      </button>
+    </nav>
+
+    <!-- Quick New Card Button -->
+    <button onclick="toggleAddModal(true)" class="w-full sm:w-auto px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs sm:text-sm font-bold flex items-center justify-center gap-2 transition shadow-md shadow-indigo-600/20 active:scale-95">
+      <i class="fa-solid fa-plus"></i> <span>새 카드 등록</span>
+    </button>
+  </div>
+
+  <!-- MAIN VIEW CONTAINER -->
+  <main class="max-w-5xl w-full mx-auto px-4 py-4 flex-1">
+
+    <!-- ==================== TAB 1: STUDY FLASHCARD ==================== -->
+    <div id="tabContentStudy" class="space-y-4">
+      
+      <!-- Filter Toolbar -->
+      <div class="grid grid-cols-1 sm:grid-cols-12 gap-2 bg-white dark:bg-slate-900 p-3 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
+        <div class="sm:col-span-5">
+          <select id="filterChapter" onchange="onFilterChange()" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-800 dark:text-slate-200 focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+            <option value="ALL">전체 챕터 (제 1장 ~ 제 28장)</option>
+          </select>
+        </div>
+        <div class="sm:col-span-4">
+          <input type="text" id="filterKeyword" oninput="onFilterChange()" placeholder="병명, 표적항원, 조직병리 소견 검색..." class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-800 dark:text-slate-200 focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+        </div>
+        <div class="sm:col-span-3 flex items-center justify-between sm:justify-end gap-2 px-1">
+          <button id="btnShuffle" onclick="toggleShuffle()" class="px-2.5 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 text-xs font-semibold flex items-center gap-1.5 transition border border-slate-200 dark:border-slate-700">
+            <i class="fa-solid fa-shuffle"></i> <span>셔플</span>
+          </button>
+          <label class="flex items-center gap-1.5 text-xs text-slate-600 dark:text-slate-300 cursor-pointer select-none">
+            <input type="checkbox" id="filterOnlyFailed" onchange="onFilterChange()" class="w-3.5 h-3.5 text-rose-500 rounded bg-slate-100 dark:bg-slate-950 border-slate-300 dark:border-slate-800 focus:ring-0">
+            <span class="text-rose-600 dark:text-rose-400 font-bold">복습 필요만</span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Realtime Deck Progress Bar -->
+      <div class="w-full bg-slate-200 dark:bg-slate-800 h-1.5 rounded-full overflow-hidden">
+        <div id="deckProgressBar" class="bg-indigo-600 dark:bg-indigo-500 h-1.5 rounded-full transition-all duration-300" style="width: 0%"></div>
+      </div>
+
+      <!-- 3D Flashcard Box -->
+      <div class="perspective-1000 w-full min-h-[380px] sm:min-h-[440px] select-none cursor-pointer" onclick="flipCard()">
+        <div id="flashcardBox" class="relative w-full min-h-[380px] sm:min-h-[440px] transform-style-3d transition-transform duration-500 ease-out shadow-lg shadow-slate-300/40 dark:shadow-2xl dark:shadow-black/60 rounded-3xl">
+          
+          <!-- FRONT FACE -->
+          <div class="absolute inset-0 backface-hidden bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 rounded-3xl p-6 sm:p-8 flex flex-col justify-between transition-colors">
+            <div>
+              <div class="flex justify-between items-start gap-2 mb-4">
+                <span id="frontChapter" class="text-xs font-bold px-3 py-1 rounded-full bg-indigo-50 dark:bg-indigo-950/80 text-indigo-700 dark:text-indigo-300 border border-indigo-100 dark:border-indigo-800/60"></span>
+                <span id="frontYield" class="text-xs font-bold px-2.5 py-1 rounded-full bg-amber-100 dark:bg-amber-500/10 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-500/20"></span>
+              </div>
+              <div class="text-[11px] font-bold tracking-widest text-slate-400 dark:text-slate-500 mb-2 uppercase flex items-center gap-1.5">
+                <i class="fa-regular fa-circle-question text-indigo-500"></i> QUESTION / KEY POINT
+              </div>
+              <h2 id="frontText" class="text-lg sm:text-2xl font-bold text-slate-900 dark:text-white leading-relaxed break-words whitespace-pre-wrap"></h2>
+              
+              <!-- Front Image -->
+              <div id="frontImgContainer" class="mt-4 hidden" onclick="event.stopPropagation(); zoomImage()">
+                <div class="relative group inline-block">
+                  <img id="frontImg" src="" alt="Clinical or Histopathology" class="max-h-52 rounded-xl object-contain bg-slate-100 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 shadow-sm transition group-hover:opacity-90">
+                  <span class="absolute bottom-2 right-2 bg-black/70 text-white text-[10px] px-2 py-0.5 rounded-md backdrop-blur flex items-center gap-1">
+                    <i class="fa-solid fa-magnifying-glass-plus"></i> 확대
+                  </span>
+                </div>
+              </div>
+            </div>
+            <div class="flex justify-between items-center pt-4 border-t border-slate-100 dark:border-slate-800 text-xs text-slate-400 dark:text-slate-500">
+              <span class="flex items-center gap-1.5 font-medium"><i class="fa-regular fa-hand-pointer text-indigo-500"></i> 터치하여 뒷면 정답 확인</span>
+              <span class="text-[11px] hidden sm:inline">단축키: Space(플립), 1/2/3(평가), ←/→(이동)</span>
+            </div>
+          </div>
+
+          <!-- BACK FACE -->
+          <div class="absolute inset-0 backface-hidden rotate-y-180 bg-slate-50 dark:bg-slate-900/95 border-2 border-indigo-500/50 dark:border-indigo-500/60 rounded-3xl p-6 sm:p-8 flex flex-col justify-between transition-colors">
+            <div>
+              <div class="flex justify-between items-start gap-2 mb-4">
+                <span id="backChapter" class="text-xs font-bold px-3 py-1 rounded-full bg-indigo-100 dark:bg-indigo-900/70 text-indigo-800 dark:text-indigo-200"></span>
+                <span class="text-xs font-bold text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
+                  <i class="fa-solid fa-circle-check"></i> 정답 확인
+                </span>
+              </div>
+              <div class="text-[11px] font-bold tracking-widest text-indigo-600 dark:text-indigo-400 mb-2 uppercase flex items-center gap-1.5">
+                <i class="fa-solid fa-book-open"></i> ANSWER & HIGH-YIELD SUMMARY
+              </div>
+              <div id="backText" class="text-sm sm:text-base font-normal text-slate-800 dark:text-slate-100 leading-relaxed break-words whitespace-pre-wrap"></div>
+            </div>
+            <div class="pt-4 border-t border-slate-200 dark:border-slate-800 flex justify-between items-center text-xs text-slate-400 dark:text-slate-500">
+              <span>암기 난이도를 선택하면 클라우드에 자동 기록됩니다.</span>
+              <span class="text-[11px] font-semibold text-indigo-500">뒤집힌 상태</span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Rating Controls (Leitner System) -->
+      <div class="grid grid-cols-3 gap-2.5 sm:gap-4 pt-1">
+        <button onclick="rateCard('again', event)" class="group py-3 px-2 rounded-2xl bg-white dark:bg-slate-900 hover:bg-rose-50 dark:hover:bg-rose-950/40 border border-slate-200 dark:border-rose-900/40 hover:border-rose-400 dark:hover:border-rose-600/80 text-rose-600 dark:text-rose-400 font-bold text-xs sm:text-sm flex flex-col items-center gap-1 transition active:scale-95 shadow-sm">
+          <span class="flex items-center gap-1.5"><i class="fa-solid fa-rotate-left text-rose-500"></i> 복습 필요</span>
+          <span class="text-[10px] text-slate-400 font-normal">단축키: 1</span>
+        </button>
+        <button onclick="rateCard('good', event)" class="group py-3 px-2 rounded-2xl bg-white dark:bg-slate-900 hover:bg-amber-50 dark:hover:bg-amber-950/40 border border-slate-200 dark:border-amber-900/40 hover:border-amber-400 dark:hover:border-amber-600/80 text-amber-600 dark:text-amber-400 font-bold text-xs sm:text-sm flex flex-col items-center gap-1 transition active:scale-95 shadow-sm">
+          <span class="flex items-center gap-1.5"><i class="fa-solid fa-check text-amber-500"></i> 보통 (Good)</span>
+          <span class="text-[10px] text-slate-400 font-normal">단축키: 2</span>
+        </button>
+        <button onclick="rateCard('easy', event)" class="group py-3 px-2 rounded-2xl bg-white dark:bg-slate-900 hover:bg-emerald-50 dark:hover:bg-emerald-950/40 border border-slate-200 dark:border-emerald-900/40 hover:border-emerald-400 dark:hover:border-emerald-600/80 text-emerald-600 dark:text-emerald-400 font-bold text-xs sm:text-sm flex flex-col items-center gap-1 transition active:scale-95 shadow-sm">
+          <span class="flex items-center gap-1.5"><i class="fa-solid fa-star text-emerald-500"></i> 완벽 암기</span>
+          <span class="text-[10px] text-slate-400 font-normal">단축키: 3</span>
+        </button>
+      </div>
+
+      <!-- Navigation & Index Bar -->
+      <div class="flex justify-between items-center px-1 pt-1">
+        <button onclick="prevCard(event)" class="px-3.5 py-2 rounded-xl bg-white dark:bg-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs font-bold flex items-center gap-1.5 border border-slate-200 dark:border-slate-800 shadow-sm transition">
+          <i class="fa-solid fa-arrow-left"></i> 이전 (←)
+        </button>
+        <div class="text-center">
+          <span id="cardCounter" class="text-xs font-black text-slate-700 dark:text-slate-300">0 / 0</span>
+          <span id="masteryStatus" class="ml-2 text-[10px] px-2 py-0.5 rounded-full font-bold"></span>
+        </div>
+        <button onclick="nextCard(event)" class="px-3.5 py-2 rounded-xl bg-white dark:bg-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs font-bold flex items-center gap-1.5 border border-slate-200 dark:border-slate-800 shadow-sm transition">
+          다음 (→) <i class="fa-solid fa-arrow-right"></i>
+        </button>
+      </div>
+
+    </div>
+
+    <!-- ==================== TAB 2: PROGRESS & STATS ==================== -->
+    <div id="tabContentStats" class="hidden space-y-4">
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-4 rounded-2xl shadow-sm">
+          <p class="text-[11px] text-slate-500 dark:text-slate-400 font-semibold">전체 등록 카드</p>
+          <p id="statTotal" class="text-2xl font-black text-slate-900 dark:text-white mt-1">0</p>
+        </div>
+        <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-4 rounded-2xl shadow-sm">
+          <p class="text-[11px] text-emerald-600 dark:text-emerald-400 font-semibold">완벽 암기 (Easy)</p>
+          <p id="statEasy" class="text-2xl font-black text-emerald-600 dark:text-emerald-400 mt-1">0</p>
+        </div>
+        <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-4 rounded-2xl shadow-sm">
+          <p class="text-[11px] text-amber-600 dark:text-amber-400 font-semibold">학습 진행 중 (Good)</p>
+          <p id="statGood" class="text-2xl font-black text-amber-600 dark:text-amber-400 mt-1">0</p>
+        </div>
+        <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-4 rounded-2xl shadow-sm">
+          <p class="text-[11px] text-rose-600 dark:text-rose-400 font-semibold">복습 필요 (Again)</p>
+          <p id="statAgain" class="text-2xl font-black text-rose-600 dark:text-rose-400 mt-1">0</p>
+        </div>
+      </div>
+
+      <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm">
+        <div class="flex justify-between items-center mb-4">
+          <h3 class="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
+            <i class="fa-solid fa-book-bookmark text-indigo-500"></i> 피부과학 제7판 28개 챕터별 암기 달성률
+          </h3>
+          <span class="text-xs text-slate-400">Easy 기준</span>
+        </div>
+        <div id="chapterProgressList" class="space-y-3 max-h-[480px] overflow-y-auto pr-2"></div>
+      </div>
+    </div>
+
+    <!-- ==================== TAB 3: CARD MANAGEMENT LIST ==================== -->
+    <div id="tabContentList" class="hidden space-y-3">
+      <div class="flex justify-between items-center text-xs text-slate-500 dark:text-slate-400 px-1">
+        <span id="listTotalCount">불러오는 중...</span>
+        <span>실시간 클라우드 DB 보관</span>
+      </div>
+      <div id="allCardsList" class="space-y-3"></div>
+    </div>
+
+  </main>
+
+  <!-- ==================== ADD / EDIT MODAL ==================== -->
+  <div id="cardModal" class="fixed inset-0 bg-slate-950/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl max-w-lg w-full p-6 shadow-2xl space-y-4">
+      <div class="flex justify-between items-center pb-2 border-b border-slate-100 dark:border-slate-800">
+        <h3 class="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
+          <i class="fa-solid fa-cloud-arrow-up text-indigo-500"></i> 카드 등록 및 클라우드 저장
+        </h3>
+        <button onclick="toggleAddModal(false)" class="w-8 h-8 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400 hover:text-slate-600 dark:hover:text-white flex items-center justify-center text-base"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+
+      <input type="hidden" id="modalDocId">
+
+      <div>
+        <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">피부과학 제7판 챕터 선택 (필수)</label>
+        <select id="modalChapter" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl p-2.5 text-xs text-slate-900 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500"></select>
+      </div>
+
+      <div>
+        <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">앞면 (문제 / 질환명 / 기출 포인트)</label>
+        <input type="text" id="modalFront" placeholder="예: Darier 병과 Hailey-Hailey 병의 원인 유전자 및 결함 단백" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl p-2.5 text-xs text-slate-900 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+      </div>
+
+      <div>
+        <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">뒷면 (정답 및 핵심 암기 요약)</label>
+        <textarea id="modalBack" rows="4" placeholder="예: • Darier: ATP2A2 (SERCA2 결함, 광선부위 각화성 구진)&#10;• Hailey-Hailey: ATP2C1 (SPCA1 결함, 간찰부 수포/미란)" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl p-2.5 text-xs text-slate-900 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500"></textarea>
+      </div>
+
+      <div>
+        <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">임상 사진 / 병리 슬라이드 이미지 직접 링크 (선택)</label>
+        <input type="url" id="modalImgUrl" placeholder="https://example.com/slide.jpg" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl p-2.5 text-xs text-slate-900 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+      </div>
+
+      <div class="flex items-center gap-2 pt-1">
+        <input type="checkbox" id="modalHighYield" class="w-4 h-4 rounded text-amber-500 bg-slate-100 dark:bg-slate-950 border-slate-300 dark:border-slate-800">
+        <label for="modalHighYield" class="text-xs font-bold text-amber-600 dark:text-amber-400">★ High-Yield (보드 시험 기출 / 빈출 핵심)</label>
+      </div>
+
+      <div class="flex gap-2 pt-3">
+        <button onclick="toggleAddModal(false)" class="flex-1 py-2.5 rounded-xl bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-xs font-bold text-slate-700 dark:text-slate-300 transition">취소</button>
+        <button onclick="saveModalCard()" class="flex-1 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-xs font-bold text-white transition shadow-lg shadow-indigo-600/30">클라우드에 저장</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- IMAGE ZOOM MODAL -->
+  <div id="imageModal" class="fixed inset-0 bg-black/90 z-50 hidden flex items-center justify-center p-4" onclick="closeImageZoom()">
+    <div class="relative max-w-4xl max-h-full">
+      <img id="zoomedImg" src="" alt="Enlarged view" class="max-h-[85vh] rounded-2xl shadow-2xl object-contain">
+      <button class="absolute -top-10 right-0 text-white text-xl p-2" onclick="closeImageZoom()"><i class="fa-solid fa-xmark"></i> 닫기</button>
+    </div>
+  </div>
+
+  <!-- SCRIPT -->
+  <script>
+    // =================================================================
+    // [중요] Firebase 1단계에서 복사한 본인의 키를 아래 객체에 붙여넣으세요!
+    // =================================================================
+    const firebaseConfig = {
+      apiKey: "AIzaSyDdWgBFgtd6PvC6DGgTkzcnd1cljjCkxJU",
+      authDomain: "dermaboard.firebaseapp.com",
+      projectId: "dermaboard",
+      storageBucket: "dermaboard.firebasestorage.app",
+      messagingSenderId: "792660371429",
+      appId: "1:792660371429:web:2a275b2482648fe52fb10c"
+    };
+
+    // 대한피부과학회 제7판 공식 28개 챕터
+    const CHAPTERS = [
+      "CHAPTER 01 피부의 구조와 기능",
+      "CHAPTER 02 피부조직병리학",
+      "CHAPTER 03 피부의 증상, 징후와 진단",
+      "CHAPTER 04 피부 면역학",
+      "CHAPTER 05 가려움증",
+      "CHAPTER 06 유전피부질환",
+      "CHAPTER 07 광의학",
+      "CHAPTER 08 물리적 피부질환과 스포츠피부질환",
+      "CHAPTER 09 습진",
+      "CHAPTER 10 직업피부질환",
+      "CHAPTER 11 약물발진, 홍반 및 두드러기",
+      "CHAPTER 12 구진인설질환",
+      "CHAPTER 13 수포질환",
+      "CHAPTER 14 감염피부질환",
+      "CHAPTER 15 피부부속기질환",
+      "CHAPTER 16 색소이상증",
+      "CHAPTER 17 피부혈관질환",
+      "CHAPTER 18 결합조직질환",
+      "CHAPTER 19 피하지방질환",
+      "CHAPTER 20 점막질환",
+      "CHAPTER 21 임신피부질환",
+      "CHAPTER 22 신생아피부질환",
+      "CHAPTER 23 피부노화",
+      "CHAPTER 24 결핍 질환, 대사이상, 포르피린증",
+      "CHAPTER 25 내분비질환, 피부점액증, 손발바닥각질피부증, 진피결합조직질환",
+      "CHAPTER 26 모반과 종양",
+      "CHAPTER 27 피부질환의 치료",
+      "CHAPTER 28 피부미용학"
+    ];
+
+    let db = null;
+    let cards = [];
+    let activeDeck = [];
+    let currentIndex = 0;
+    let isFlipped = false;
+    let isShuffled = false;
+
+    // 테마 설정
+    function initTheme() {
+      const savedTheme = localStorage.getItem('derm_theme') || 'dark';
+      if (savedTheme === 'light') {
+        document.getElementById('htmlRoot').classList.remove('dark');
+        document.getElementById('themeIcon').className = "fa-solid fa-sun";
+      } else {
+        document.getElementById('htmlRoot').classList.add('dark');
+        document.getElementById('themeIcon').className = "fa-solid fa-moon";
+      }
+    }
+
+    function toggleTheme() {
+      const isDark = document.getElementById('htmlRoot').classList.toggle('dark');
+      localStorage.setItem('derm_theme', isDark ? 'dark' : 'light');
+      document.getElementById('themeIcon').className = isDark ? "fa-solid fa-moon" : "fa-solid fa-sun";
+    }
+
+    function init() {
+      initTheme();
+
+      // 챕터 옵션 채우기
+      const filterSelect = document.getElementById('filterChapter');
+      const modalSelect = document.getElementById('modalChapter');
+      CHAPTERS.forEach(ch => {
+        filterSelect.innerHTML += `<option value="${ch}">${ch}</option>`;
+        modalSelect.innerHTML += `<option value="${ch}">${ch}</option>`;
+      });
+
+      setupKeybindings();
+
+      // Firebase 초기화 검증
+      if (firebaseConfig.apiKey === "YOUR_API_KEY") {
+        document.getElementById('syncBadge').innerHTML = `<span class="w-2 h-2 rounded-full bg-rose-500"></span> 키 입력 필요`;
+        document.getElementById('syncBadge').className = "text-xs px-2.5 py-1 rounded-full bg-rose-100 dark:bg-rose-950 text-rose-700 dark:text-rose-300 border border-rose-300 dark:border-rose-800";
+        alert("코드 하단의 firebaseConfig에 Firebase 발급 키를 입력해주세요!");
+        return;
+      }
+
+      try {
+        firebase.initializeApp(firebaseConfig);
+        db = firebase.firestore();
+        document.getElementById('syncBadge').innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> 실시간 동기화됨`;
+        document.getElementById('syncBadge').className = "text-xs px-2.5 py-1 rounded-full bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800 font-bold";
+
+        // Firestore 실시간 리스너 (onSnapshot)
+        db.collection("derm_cards_7th").orderBy("createdAt", "desc").onSnapshot((snapshot) => {
+          cards = [];
+          snapshot.forEach(doc => {
+            cards.push({ id: doc.id, ...doc.data() });
+          });
+          onFilterChange();
+          updateStats();
+          renderFullList();
+        }, (err) => {
+          console.error("Firestore Error:", err);
+          document.getElementById('syncBadge').innerText = "보안 규칙 오류";
+        });
+
+      } catch (err) {
+        console.error(err);
+        alert("Firebase 연결 실패: " + err.message);
+      }
+    }
+
+    function setTab(tab) {
+      ['Study', 'Stats', 'List'].forEach(t => {
+        document.getElementById(`tabContent${t}`).classList.add('hidden');
+        document.getElementById(`nav${t}`).className = "flex-1 sm:flex-initial px-3.5 py-1.5 text-xs sm:text-sm font-semibold rounded-lg text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition flex items-center justify-center gap-2";
+      });
+
+      document.getElementById(`tabContent${tab.charAt(0).toUpperCase() + tab.slice(1)}`).classList.remove('hidden');
+      document.getElementById(`nav${tab.charAt(0).toUpperCase() + tab.slice(1)}`).className = "flex-1 sm:flex-initial px-3.5 py-1.5 text-xs sm:text-sm font-bold rounded-lg bg-white dark:bg-indigo-600 text-indigo-700 dark:text-white shadow-sm transition flex items-center justify-center gap-2";
+
+      if (tab === 'stats') updateStats();
+      if (tab === 'list') renderFullList();
+      if (tab === 'study') renderCard();
+    }
+
+    function onFilterChange() {
+      const ch = document.getElementById('filterChapter').value;
+      const kw = document.getElementById('filterKeyword').value.toLowerCase();
+      const onlyFailed = document.getElementById('filterOnlyFailed').checked;
+
+      activeDeck = cards.filter(c => {
+        const matchesCh = (ch === 'ALL' || c.chapter === ch);
+        const matchesKw = ((c.front || '').toLowerCase().includes(kw) || (c.back || '').toLowerCase().includes(kw));
+        const matchesFailed = (!onlyFailed || c.status === 'again');
+        return matchesCh && matchesKw && matchesFailed;
+      });
+
+      if (isShuffled) {
+        shuffleArray(activeDeck);
+      }
+
+      if (currentIndex >= activeDeck.length) {
+        currentIndex = 0;
+      }
+      isFlipped = false;
+      renderCard();
+    }
+
+    function toggleShuffle() {
+      isShuffled = !isShuffled;
+      const btn = document.getElementById('btnShuffle');
+      if (isShuffled) {
+        btn.classList.replace('bg-slate-100', 'bg-indigo-600');
+        btn.classList.replace('dark:bg-slate-800', 'bg-indigo-600');
+        btn.classList.replace('text-slate-700', 'text-white');
+        btn.classList.replace('dark:text-slate-300', 'text-white');
+      } else {
+        btn.classList.replace('bg-indigo-600', 'bg-slate-100');
+        btn.classList.add('dark:bg-slate-800');
+        btn.classList.replace('text-white', 'text-slate-700');
+        btn.classList.add('dark:text-slate-300');
+      }
+      onFilterChange();
+    }
+
+    function shuffleArray(arr) {
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+    }
+
+    function renderCard() {
+      const box = document.getElementById('flashcardBox');
+      box.classList.remove('rotate-y-180');
+      isFlipped = false;
+
+      const card = activeDeck[currentIndex];
+      const counter = document.getElementById('cardCounter');
+      const statusBadge = document.getElementById('masteryStatus');
+      const progressBar = document.getElementById('deckProgressBar');
+
+      if (!card) {
+        document.getElementById('frontChapter').innerText = "카드 없음";
+        document.getElementById('frontYield').innerText = "";
+        document.getElementById('frontText').innerText = "해당 조건의 카드가 없습니다.\n상단의 [+ 새 카드 등록]을 눌러 카드를 생성해보세요.";
+        document.getElementById('frontImgContainer').classList.add('hidden');
+        document.getElementById('backChapter').innerText = "";
+        document.getElementById('backText').innerText = "";
+        counter.innerText = "0 / 0";
+        statusBadge.className = "hidden";
+        progressBar.style.width = "0%";
+        return;
+      }
+
+      document.getElementById('frontChapter').innerText = card.chapter;
+      document.getElementById('frontYield').innerText = card.highYield ? "★ High-Yield 기출" : "";
+      document.getElementById('frontText').innerText = card.front;
+
+      const imgCont = document.getElementById('frontImgContainer');
+      const imgElem = document.getElementById('frontImg');
+      if (card.imageUrl && card.imageUrl.trim() !== '') {
+        imgElem.src = card.imageUrl;
+        imgCont.classList.remove('hidden');
+      } else {
+        imgCont.classList.add('hidden');
+      }
+
+      document.getElementById('backChapter').innerText = card.chapter;
+      document.getElementById('backText').innerText = card.back;
+
+      counter.innerText = `${currentIndex + 1} / ${activeDeck.length}`;
+      statusBadge.classList.remove('hidden');
+
+      const pct = Math.round(((currentIndex + 1) / activeDeck.length) * 100);
+      progressBar.style.width = `${pct}%`;
+
+      if (card.status === 'easy') {
+        statusBadge.innerText = "완벽 암기 (Easy)";
+        statusBadge.className = "ml-2 text-[10px] px-2.5 py-0.5 rounded-full font-bold bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800";
+      } else if (card.status === 'good') {
+        statusBadge.innerText = "학습 중 (Good)";
+        statusBadge.className = "ml-2 text-[10px] px-2.5 py-0.5 rounded-full font-bold bg-amber-100 dark:bg-amber-950 text-amber-800 dark:text-amber-400 border border-amber-200 dark:border-amber-800";
+      } else {
+        statusBadge.innerText = "복습 필요 (Again)";
+        statusBadge.className = "ml-2 text-[10px] px-2.5 py-0.5 rounded-full font-bold bg-rose-100 dark:bg-rose-950 text-rose-800 dark:text-rose-400 border border-rose-200 dark:border-rose-800";
+      }
+    }
+
+    function flipCard() {
+      if (activeDeck.length === 0) return;
+      isFlipped = !isFlipped;
+      const box = document.getElementById('flashcardBox');
+      if (isFlipped) {
+        box.classList.add('rotate-y-180');
+      } else {
+        box.classList.remove('rotate-y-180');
+      }
+    }
+
+    function prevCard(e) {
+      if (e) e.stopPropagation();
+      if (activeDeck.length <= 1) return;
+      currentIndex = (currentIndex - 1 + activeDeck.length) % activeDeck.length;
+      renderCard();
+    }
+
+    function nextCard(e) {
+      if (e) e.stopPropagation();
+      if (activeDeck.length <= 1) return;
+      currentIndex = (currentIndex + 1) % activeDeck.length;
+      renderCard();
+    }
+
+    function rateCard(status, e) {
+      if (e) e.stopPropagation();
+      if (activeDeck.length === 0 || !db) return;
+
+      const card = activeDeck[currentIndex];
+      db.collection("derm_cards_7th").doc(card.id).update({
+        status: status,
+        lastReviewedAt: Date.now()
+      }).catch(err => console.error(err));
+
+      nextCard();
+    }
+
+    function setupKeybindings() {
+      window.addEventListener('keydown', (e) => {
+        if (!document.getElementById('cardModal').classList.contains('hidden')) return;
+        if (!document.getElementById('imageModal').classList.contains('hidden')) return;
+        if (['input', 'textarea'].includes(document.activeElement.tagName.toLowerCase())) return;
+
+        if (e.code === 'Space') {
+          e.preventDefault();
+          flipCard();
+        } else if (e.code === 'ArrowRight') {
+          nextCard();
+        } else if (e.code === 'ArrowLeft') {
+          prevCard();
+        } else if (e.key === '1') {
+          rateCard('again');
+        } else if (e.key === '2') {
+          rateCard('good');
+        } else if (e.key === '3') {
+          rateCard('easy');
+        }
+      });
+    }
+
+    function updateStats() {
+      const total = cards.length;
+      const easy = cards.filter(c => c.status === 'easy').length;
+      const good = cards.filter(c => c.status === 'good').length;
+      const again = cards.filter(c => c.status === 'again').length;
+
+      document.getElementById('statTotal').innerText = total;
+      document.getElementById('statEasy').innerText = easy;
+      document.getElementById('statGood').innerText = good;
+      document.getElementById('statAgain').innerText = again;
+
+      const container = document.getElementById('chapterProgressList');
+      container.innerHTML = '';
+
+      CHAPTERS.forEach(ch => {
+        const chCards = cards.filter(c => c.chapter === ch);
+        const chCount = chCards.length;
+        const chEasy = chCards.filter(c => c.status === 'easy').length;
+        const pct = chCount === 0 ? 0 : Math.round((chEasy / chCount) * 100);
+
+        container.innerHTML += `
+          <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">
+            <div class="flex justify-between text-xs mb-1.5 font-medium">
+              <span class="text-slate-800 dark:text-slate-200 truncate max-w-[70%] font-semibold">${ch}</span>
+              <span class="text-slate-500 dark:text-slate-400 font-bold">${chEasy}/${chCount} (${pct}%)</span>
+            </div>
+            <div class="w-full bg-slate-200 dark:bg-slate-800 h-2 rounded-full overflow-hidden">
+              <div class="bg-indigo-600 dark:bg-indigo-500 h-2 rounded-full transition-all duration-300" style="width: ${pct}%"></div>
+            </div>
+          </div>
+        `;
+      });
+    }
+
+    function renderFullList() {
+      const listContainer = document.getElementById('allCardsList');
+      document.getElementById('listTotalCount').innerText = `총 ${cards.length}개의 카드가 클라우드에 보관되어 있습니다.`;
+
+      if (cards.length === 0) {
+        listContainer.innerHTML = '<div class="text-center py-16 text-xs text-slate-400">등록된 카드가 없습니다.</div>';
+        return;
+      }
+
+      listContainer.innerHTML = cards.map(c => `
+        <div class="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 space-y-2 shadow-sm">
+          <div class="flex justify-between items-start gap-2">
+            <span class="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-indigo-50 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 border border-indigo-100 dark:border-indigo-800">${c.chapter}</span>
+            <div class="flex items-center gap-2">
+              ${c.highYield ? '<span class="text-[10px] font-bold text-amber-700 dark:text-amber-400 bg-amber-100 dark:bg-amber-500/10 px-2 py-0.5 rounded-full">★ 기출</span>' : ''}
+              <button onclick="editCard('${c.id}')" class="text-xs text-indigo-600 dark:text-indigo-400 hover:opacity-80 p-1"><i class="fa-solid fa-pen"></i></button>
+              <button onclick="deleteCard('${c.id}')" class="text-xs text-rose-600 dark:text-rose-400 hover:opacity-80 p-1"><i class="fa-solid fa-trash"></i></button>
+            </div>
+          </div>
+          <p class="text-sm font-bold text-slate-900 dark:text-white leading-snug">${c.front}</p>
+          <div class="text-xs text-slate-700 dark:text-slate-300 bg-slate-50 dark:bg-slate-950 p-3 rounded-xl whitespace-pre-wrap leading-relaxed border border-slate-100 dark:border-slate-800/80">${c.back}</div>
+          ${c.imageUrl ? `<a href="${c.imageUrl}" target="_blank" class="text-[11px] text-sky-600 dark:text-sky-400 underline inline-flex items-center gap-1 mt-1"><i class="fa-solid fa-image"></i> 첨부 이미지 열기</a>` : ''}
+        </div>
+      `).join('');
+    }
+
+    function toggleAddModal(show) {
+      const modal = document.getElementById('cardModal');
+      if (show) {
+        document.getElementById('modalDocId').value = '';
+        document.getElementById('modalFront').value = '';
+        document.getElementById('modalBack').value = '';
+        document.getElementById('modalImgUrl').value = '';
+        document.getElementById('modalHighYield').checked = false;
+        modal.classList.remove('hidden');
+      } else {
+        modal.classList.add('hidden');
+      }
+    }
+
+    function editCard(id) {
+      const card = cards.find(c => c.id === id);
+      if (!card) return;
+
+      document.getElementById('modalDocId').value = card.id;
+      document.getElementById('modalChapter').value = card.chapter;
+      document.getElementById('modalFront').value = card.front;
+      document.getElementById('modalBack').value = card.back;
+      document.getElementById('modalImgUrl').value = card.imageUrl || '';
+      document.getElementById('modalHighYield').checked = !!card.highYield;
+
+      document.getElementById('cardModal').classList.remove('hidden');
+    }
+
+    async function saveModalCard() {
+      if (!db) {
+        alert("Firebase가 연결되어 있지 않습니다. 설정 키를 확인해주세요.");
+        return;
+      }
+
+      const docId = document.getElementById('modalDocId').value;
+      const chapter = document.getElementById('modalChapter').value;
+      const front = document.getElementById('modalFront').value.trim();
+      const back = document.getElementById('modalBack').value.trim();
+      const imageUrl = document.getElementById('modalImgUrl').value.trim();
+      const highYield = document.getElementById('modalHighYield').checked;
+
+      if (!front || !back) {
+        alert('앞면(문제)과 뒷면(정답) 내용을 모두 입력해주세요.');
+        return;
+      }
+
+      const cardData = {
+        chapter,
+        front,
+        back,
+        imageUrl,
+        highYield,
+        updatedAt: Date.now()
+      };
+
+      try {
+        if (docId) {
+          await db.collection("derm_cards_7th").doc(docId).update(cardData);
+        } else {
+          cardData.status = 'again';
+          cardData.createdAt = Date.now();
+          await db.collection("derm_cards_7th").add(cardData);
+        }
+        toggleAddModal(false);
+      } catch (err) {
+        console.error(err);
+        alert("저장 중 오류: " + err.message);
+      }
+    }
+
+    async function deleteCard(id) {
+      if (!confirm('이 카드를 완전히 삭제하시겠습니까?')) return;
+      try {
+        await db.collection("derm_cards_7th").doc(id).delete();
+      } catch (err) {
+        console.error(err);
+        alert("삭제 실패: " + err.message);
+      }
+    }
+
+    // 이미지 확대 모달
+    function zoomImage() {
+      const src = document.getElementById('frontImg').src;
+      if (!src) return;
+      document.getElementById('zoomedImg').src = src;
+      document.getElementById('imageModal').classList.remove('hidden');
+    }
+
+    function closeImageZoom() {
+      document.getElementById('imageModal').classList.add('hidden');
+    }
+
+    window.onload = init;
+  </script>
+</body>
+</html>
