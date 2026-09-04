@@ -286,7 +286,6 @@
       <div>
         <div class="flex justify-between items-center mb-1">
           <label class="text-xs font-bold text-slate-700 dark:text-slate-300">앞면 (문제 / 질환명 / 기출 포인트)</label>
-          <!-- Formatting Toolbar for Front -->
           <div class="flex items-center gap-1">
             <button type="button" onclick="applyFormat('modalFront', '**', '**')" class="px-2 py-0.5 rounded bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 text-[11px] font-black text-slate-700 dark:text-slate-200" title="볼드체">B</button>
             <button type="button" onclick="applyFormat('modalFront', '[red]', '[/red]')" class="px-2 py-0.5 rounded bg-rose-100 dark:bg-rose-950/60 hover:bg-rose-200 text-[11px] font-bold text-rose-600 dark:text-rose-400" title="붉은 글씨">🔴 빨강</button>
@@ -321,7 +320,6 @@
       <div>
         <div class="flex justify-between items-center mb-1">
           <label class="text-xs font-bold text-slate-700 dark:text-slate-300">뒷면 (정답 및 핵심 암기 요약)</label>
-          <!-- Formatting Toolbar for Back -->
           <div class="flex items-center gap-1">
             <button type="button" onclick="applyFormat('modalBack', '**', '**')" class="px-2 py-0.5 rounded bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 text-[11px] font-black text-slate-700 dark:text-slate-200" title="굵은 글씨">B 굵게</button>
             <button type="button" onclick="applyFormat('modalBack', '[red]', '[/red]')" class="px-2 py-0.5 rounded bg-rose-100 dark:bg-rose-950/60 hover:bg-rose-200 text-[11px] font-bold text-rose-600 dark:text-rose-400" title="붉은 글씨">🔴 빨강</button>
@@ -379,7 +377,7 @@
     // =================================================================
     // [중요] 본인의 Firebase 설정 키를 여기에 그대로 붙여넣으세요!
     // =================================================================
-  const firebaseConfig = {
+    const firebaseConfig = {
       apiKey: "AIzaSyDdWgBFgtd6PvC6DGgTkzcnd1cljjCkxJU",
       authDomain: "dermaboard.firebaseapp.com",
       projectId: "dermaboard",
@@ -426,15 +424,12 @@
     let currentIndex = 0;
     let isFlipped = false;
     let isShuffled = false;
-    let activeTarget = 'front'; // 현재 활성화된 포커스 위치 (front | back)
+    let activeTarget = 'front';
 
     function setActiveInput(target) {
       activeTarget = target;
     }
 
-    // =================================================================
-    // 텍스트 서식 툴바 및 파서 (Bold, Red, Highlight, Blue)
-    // =================================================================
     function applyFormat(textareaId, prefix, suffix) {
       const textarea = document.getElementById(textareaId);
       const start = textarea.selectionStart;
@@ -458,24 +453,14 @@
       if (!rawText) return '';
       let s = escapeHtml(rawText);
 
-      // 볼드: **텍스트**
       s = s.replace(/\*\*(.*?)\*\*/g, '<strong class="font-extrabold text-indigo-900 dark:text-indigo-200 underline decoration-indigo-300 dark:decoration-indigo-700 underline-offset-2">$1</strong>');
-      
-      // 빨간 글씨: [red]텍스트[/red]
       s = s.replace(/\[red\](.*?)\[\/red\]/gi, '<span class="text-rose-600 dark:text-rose-400 font-extrabold">$1</span>');
-      
-      // 형광펜: [mark]텍스트[/mark]
       s = s.replace(/\[mark\](.*?)\[\/mark\]/gi, '<mark class="bg-amber-200 dark:bg-amber-900/60 text-amber-950 dark:text-amber-100 px-1 py-0.5 rounded font-bold">$1</mark>');
-
-      // 파란 글씨: [blue]텍스트[/blue]
       s = s.replace(/\[blue\](.*?)\[\/blue\]/gi, '<span class="text-sky-600 dark:text-sky-400 font-extrabold">$1</span>');
 
       return s;
     }
 
-    // =================================================================
-    // 이미지 압축 및 처리 로직 (앞면/뒷면 분리)
-    // =================================================================
     function compressImageFile(file) {
       return new Promise((resolve, reject) => {
         const reader = new FileReader();
@@ -554,7 +539,6 @@
     }
 
     function setupPasteAndDrop() {
-      // 1. 붙여넣기 (Ctrl + V) - 현재 포커스에 따라 앞면 또는 뒷면에 자동 첨부
       window.addEventListener('paste', async (e) => {
         if (document.getElementById('cardModal').classList.contains('hidden')) return;
         
@@ -570,7 +554,6 @@
         }
       });
 
-      // 2. 드래그 앤 드롭
       ['Front', 'Back'].forEach(capSide => {
         const side = capSide.toLowerCase();
         const dropZone = document.getElementById(`dropZone${capSide}`);
@@ -599,9 +582,6 @@
       });
     }
 
-    // =================================================================
-    // 초기화 및 테마
-    // =================================================================
     function initTheme() {
       const savedTheme = localStorage.getItem('derm_theme') || 'dark';
       if (savedTheme === 'light') {
@@ -662,9 +642,6 @@
       }
     }
 
-    // =================================================================
-    // 탭 및 카드 렌더링
-    // =================================================================
     function setTab(tab) {
       ['Study', 'Stats', 'List'].forEach(t => {
         document.getElementById(`tabContent${t}`).classList.add('hidden');
@@ -736,14 +713,21 @@
       const statusBadge = document.getElementById('masteryStatus');
       const progressBar = document.getElementById('deckProgressBar');
 
+      const frontImgCont = document.getElementById('frontImgContainer');
+      const frontImgElem = document.getElementById('frontImg');
+      const backImgCont = document.getElementById('backImgContainer');
+      const backImgElem = document.getElementById('backImg');
+
       if (!card) {
         document.getElementById('frontChapter').innerText = "카드 없음";
         document.getElementById('frontYield').innerText = "";
         document.getElementById('frontText').innerText = "해당 조건의 카드가 없습니다.\n상단의 [+ 새 카드 등록]을 눌러 카드를 생성해보세요.";
-        document.getElementById('frontImgContainer').classList.add('hidden');
+        frontImgElem.src = '';
+        frontImgCont.classList.add('hidden');
         document.getElementById('backChapter').innerText = "";
         document.getElementById('backText').innerText = "";
-        document.getElementById('backImgContainer').classList.add('hidden');
+        backImgElem.src = '';
+        backImgCont.classList.add('hidden');
         counter.innerText = "0 / 0";
         statusBadge.className = "hidden";
         progressBar.style.width = "0%";
@@ -754,29 +738,33 @@
       document.getElementById('frontYield').innerText = card.highYield ? "★ High-Yield 기출" : "";
       document.getElementById('frontText').innerHTML = parseCardText(card.front);
 
-      // 1. 앞면 이미지 렌더링 (기존 imageBase64/imageUrl 호환)
-      const frontSrc = card.frontImageBase64 || card.imageBase64 || card.imageUrl || '';
-      const frontImgCont = document.getElementById('frontImgContainer');
-      const frontImgElem = document.getElementById('frontImg');
+      // [핵심 수정] 앞면 사진 결정: frontImageBase64가 명시적으로 정의된 경우(빈 문자열 포함) 그 값을 엄격히 사용!
+      // 과거 구버전 필드(imageBase64, imageUrl)는 frontImageBase64 필드가 아예 없던 최초 카드에서만 예외적으로 참조
+      let frontSrc = '';
+      if (card.frontImageBase64 !== undefined) {
+        frontSrc = card.frontImageBase64 || '';
+      } else {
+        frontSrc = card.imageBase64 || card.imageUrl || '';
+      }
+
       if (frontSrc.trim() !== '') {
         frontImgElem.src = frontSrc;
         frontImgCont.classList.remove('hidden');
       } else {
+        frontImgElem.src = '';
         frontImgCont.classList.add('hidden');
       }
 
-      // 2. 뒷면 텍스트 서식 렌더링
+      // 뒷면 텍스트 및 사진 렌더링
       document.getElementById('backChapter').innerText = card.chapter;
       document.getElementById('backText').innerHTML = parseCardText(card.back);
 
-      // 3. 뒷면 이미지 렌더링
       const backSrc = card.backImageBase64 || '';
-      const backImgCont = document.getElementById('backImgContainer');
-      const backImgElem = document.getElementById('backImg');
       if (backSrc.trim() !== '') {
         backImgElem.src = backSrc;
         backImgCont.classList.remove('hidden');
       } else {
+        backImgElem.src = '';
         backImgCont.classList.add('hidden');
       }
 
@@ -903,8 +891,14 @@
       }
 
       listContainer.innerHTML = cards.map(c => {
-        const frontSrc = c.frontImageBase64 || c.imageBase64 || c.imageUrl || '';
+        let frontSrc = '';
+        if (c.frontImageBase64 !== undefined) {
+          frontSrc = c.frontImageBase64 || '';
+        } else {
+          frontSrc = c.imageBase64 || c.imageUrl || '';
+        }
         const backSrc = c.backImageBase64 || '';
+
         return `
         <div class="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 space-y-2 shadow-sm">
           <div class="flex justify-between items-start gap-2">
@@ -960,14 +954,22 @@
       document.getElementById('modalBack').value = card.back;
       document.getElementById('modalHighYield').checked = !!card.highYield;
 
-      const frontImg = card.frontImageBase64 || card.imageBase64 || card.imageUrl || '';
-      if (frontImg) {
+      // 앞면 사진 세팅 (엄격 검증)
+      let frontImg = '';
+      if (card.frontImageBase64 !== undefined) {
+        frontImg = card.frontImageBase64 || '';
+      } else {
+        frontImg = card.imageBase64 || card.imageUrl || '';
+      }
+
+      if (frontImg && frontImg.trim() !== '') {
         setImagePreview(frontImg, 'front');
       } else {
         clearImage('front');
       }
 
-      if (card.backImageBase64) {
+      // 뒷면 사진 세팅
+      if (card.backImageBase64 && card.backImageBase64.trim() !== '') {
         setImagePreview(card.backImageBase64, 'back');
       } else {
         clearImage('back');
@@ -995,12 +997,15 @@
         return;
       }
 
+      // [핵심 수정] imageBase64와 imageUrl을 명시적으로 '' 처리하여 구버전 데이터가 남지 않도록 박멸!
       const cardData = {
         chapter,
         front,
         back,
         frontImageBase64: frontImageBase64 || '',
         backImageBase64: backImageBase64 || '',
+        imageBase64: '',
+        imageUrl: '',
         highYield,
         updatedAt: Date.now()
       };
@@ -1030,7 +1035,6 @@
       }
     }
 
-    // 사진 확대 모달
     function zoomImage(imgElementId) {
       const src = document.getElementById(imgElementId).src;
       if (!src) return;
