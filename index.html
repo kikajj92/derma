@@ -124,41 +124,41 @@
       </div>
 
       <!-- 3D Flashcard Box -->
-      <div class="perspective-1000 w-full min-h-[380px] sm:min-h-[440px] select-none cursor-pointer" onclick="flipCard()">
-        <div id="flashcardBox" class="relative w-full min-h-[380px] sm:min-h-[440px] transform-style-3d transition-transform duration-500 ease-out shadow-lg shadow-slate-300/40 dark:shadow-2xl dark:shadow-black/60 rounded-3xl">
+      <div class="perspective-1000 w-full min-h-[400px] sm:min-h-[460px] select-none cursor-pointer" onclick="flipCard()">
+        <div id="flashcardBox" class="relative w-full min-h-[400px] sm:min-h-[460px] transform-style-3d transition-transform duration-500 ease-out shadow-lg shadow-slate-300/40 dark:shadow-2xl dark:shadow-black/60 rounded-3xl">
           
           <!-- FRONT FACE -->
-          <div class="absolute inset-0 backface-hidden bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 rounded-3xl p-6 sm:p-8 flex flex-col justify-between transition-colors">
+          <div class="absolute inset-0 backface-hidden bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 rounded-3xl p-6 sm:p-8 flex flex-col justify-between transition-colors overflow-y-auto">
             <div>
-              <div class="flex justify-between items-start gap-2 mb-4">
+              <div class="flex justify-between items-start gap-2 mb-3">
                 <span id="frontChapter" class="text-xs font-bold px-3 py-1 rounded-full bg-indigo-50 dark:bg-indigo-950/80 text-indigo-700 dark:text-indigo-300 border border-indigo-100 dark:border-indigo-800/60"></span>
                 <span id="frontYield" class="text-xs font-bold px-2.5 py-1 rounded-full bg-amber-100 dark:bg-amber-500/10 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-500/20"></span>
               </div>
               <div class="text-[11px] font-bold tracking-widest text-slate-400 dark:text-slate-500 mb-2 uppercase flex items-center gap-1.5">
                 <i class="fa-regular fa-circle-question text-indigo-500"></i> QUESTION / KEY POINT
               </div>
-              <h2 id="frontText" class="text-lg sm:text-2xl font-bold text-slate-900 dark:text-white leading-relaxed break-words whitespace-pre-wrap"></h2>
+              <h2 id="frontText" class="text-base sm:text-xl font-bold text-slate-900 dark:text-white leading-relaxed break-words whitespace-pre-wrap"></h2>
               
               <!-- Front Image -->
-              <div id="frontImgContainer" class="mt-4 hidden" onclick="event.stopPropagation(); zoomImage()">
+              <div id="frontImgContainer" class="mt-4 hidden" onclick="event.stopPropagation(); zoomImage('frontImg')">
                 <div class="relative group inline-block">
-                  <img id="frontImg" src="" alt="Clinical or Pathology" class="max-h-56 rounded-xl object-contain bg-slate-100 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 shadow-sm transition group-hover:opacity-90">
-                  <span class="absolute bottom-2 right-2 bg-black/70 text-white text-[10px] px-2 py-0.5 rounded-md backdrop-blur flex items-center gap-1">
-                    <i class="fa-solid fa-magnifying-glass-plus"></i> 클릭하여 확대
+                  <img id="frontImg" src="" alt="Front Slide" class="max-h-56 rounded-xl object-contain bg-slate-100 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 shadow-sm transition group-hover:opacity-90">
+                  <span class="absolute bottom-2 right-2 bg-black/75 text-white text-[10px] px-2 py-0.5 rounded-md backdrop-blur flex items-center gap-1">
+                    <i class="fa-solid fa-magnifying-glass-plus"></i> 앞면 사진 확대
                   </span>
                 </div>
               </div>
             </div>
-            <div class="flex justify-between items-center pt-4 border-t border-slate-100 dark:border-slate-800 text-xs text-slate-400 dark:text-slate-500">
+            <div class="flex justify-between items-center pt-4 border-t border-slate-100 dark:border-slate-800 text-xs text-slate-400 dark:text-slate-500 mt-4">
               <span class="flex items-center gap-1.5 font-medium"><i class="fa-regular fa-hand-pointer text-indigo-500"></i> 터치하여 정답 확인</span>
               <span class="text-[11px] hidden sm:inline">Space(플립), 1/2/3(평가), ←/→(이동)</span>
             </div>
           </div>
 
           <!-- BACK FACE -->
-          <div class="absolute inset-0 backface-hidden rotate-y-180 bg-slate-50 dark:bg-slate-900/95 border-2 border-indigo-500/50 dark:border-indigo-500/60 rounded-3xl p-6 sm:p-8 flex flex-col justify-between transition-colors">
+          <div class="absolute inset-0 backface-hidden rotate-y-180 bg-slate-50 dark:bg-slate-900/95 border-2 border-indigo-500/50 dark:border-indigo-500/60 rounded-3xl p-6 sm:p-8 flex flex-col justify-between transition-colors overflow-y-auto">
             <div>
-              <div class="flex justify-between items-start gap-2 mb-4">
+              <div class="flex justify-between items-start gap-2 mb-3">
                 <span id="backChapter" class="text-xs font-bold px-3 py-1 rounded-full bg-indigo-100 dark:bg-indigo-900/70 text-indigo-800 dark:text-indigo-200"></span>
                 <span class="text-xs font-bold text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
                   <i class="fa-solid fa-circle-check"></i> 정답 확인
@@ -168,8 +168,18 @@
                 <i class="fa-solid fa-book-open"></i> ANSWER & HIGH-YIELD SUMMARY
               </div>
               <div id="backText" class="text-sm sm:text-base font-normal text-slate-800 dark:text-slate-100 leading-relaxed break-words whitespace-pre-wrap"></div>
+              
+              <!-- Back Image -->
+              <div id="backImgContainer" class="mt-4 hidden" onclick="event.stopPropagation(); zoomImage('backImg')">
+                <div class="relative group inline-block">
+                  <img id="backImg" src="" alt="Back Explanation Slide" class="max-h-56 rounded-xl object-contain bg-slate-100 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 shadow-sm transition group-hover:opacity-90">
+                  <span class="absolute bottom-2 right-2 bg-black/75 text-white text-[10px] px-2 py-0.5 rounded-md backdrop-blur flex items-center gap-1">
+                    <i class="fa-solid fa-magnifying-glass-plus"></i> 뒷면 해설 사진 확대
+                  </span>
+                </div>
+              </div>
             </div>
-            <div class="pt-4 border-t border-slate-200 dark:border-slate-800 flex justify-between items-center text-xs text-slate-400 dark:text-slate-500">
+            <div class="pt-4 border-t border-slate-200 dark:border-slate-800 flex justify-between items-center text-xs text-slate-400 dark:text-slate-500 mt-4">
               <span>암기 난이도를 선택하면 클라우드에 자동 기록됩니다.</span>
               <span class="text-[11px] font-semibold text-indigo-500">뒤집힌 상태</span>
             </div>
@@ -254,7 +264,7 @@
 
   <!-- ==================== ADD / EDIT MODAL ==================== -->
   <div id="cardModal" class="fixed inset-0 bg-slate-950/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-    <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl max-w-lg w-full p-6 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto">
+    <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl max-w-xl w-full p-6 shadow-2xl space-y-4 max-h-[92vh] overflow-y-auto">
       
       <div class="flex justify-between items-center pb-2 border-b border-slate-100 dark:border-slate-800">
         <h3 class="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
@@ -264,51 +274,83 @@
       </div>
 
       <input type="hidden" id="modalDocId">
-      <input type="hidden" id="modalImageBase64">
+      <input type="hidden" id="modalFrontImageBase64">
+      <input type="hidden" id="modalBackImageBase64">
 
       <div>
         <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">피부과학 제7판 챕터 선택 (필수)</label>
         <select id="modalChapter" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl p-2.5 text-xs text-slate-900 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500"></select>
       </div>
 
+      <!-- 1. 앞면 (문제/기출포인트) -->
       <div>
-        <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">앞면 (문제 / 질환명 / 기출 포인트)</label>
-        <input type="text" id="modalFront" placeholder="예: Darier 병과 Hailey-Hailey 병의 원인 유전자 및 결함 단백" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl p-2.5 text-xs text-slate-900 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500">
-      </div>
-
-      <div>
-        <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">뒷면 (정답 및 핵심 암기 요약)</label>
-        <textarea id="modalBack" rows="4" placeholder="예: • Darier: ATP2A2 (SERCA2 결함, 광선부위 각화성 구진)&#10;• Hailey-Hailey: ATP2C1 (SPCA1 결함, 간찰부 수포/미란)" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl p-2.5 text-xs text-slate-900 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500"></textarea>
-      </div>
-
-      <!-- IMAGE UPLOAD & PASTE AREA -->
-      <div>
-        <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
-          <i class="fa-solid fa-camera text-indigo-500"></i> 임상 사진 / 조직병리 슬라이드 첨부 (선택)
-        </label>
-        
-        <!-- Drop & Paste Zone -->
-        <div id="imageDropZone" class="border-2 border-dashed border-slate-300 dark:border-slate-700 hover:border-indigo-500 dark:hover:border-indigo-500 rounded-2xl p-4 text-center transition cursor-pointer bg-slate-50/50 dark:bg-slate-950/50" onclick="document.getElementById('fileUploadInput').click()">
-          <input type="file" id="fileUploadInput" accept="image/*" class="hidden" onchange="handleFileSelect(event)">
-          
-          <div id="uploadPrompt" class="space-y-1">
-            <i class="fa-solid fa-cloud-arrow-up text-2xl text-indigo-500"></i>
-            <p class="text-xs font-bold text-slate-700 dark:text-slate-300">내 컴퓨터에서 사진 선택</p>
-            <p class="text-[11px] text-slate-500 dark:text-slate-400">또는 <b>화면 캡처 후 여기서 Ctrl + V (붙여넣기)</b></p>
+        <div class="flex justify-between items-center mb-1">
+          <label class="text-xs font-bold text-slate-700 dark:text-slate-300">앞면 (문제 / 질환명 / 기출 포인트)</label>
+          <!-- Formatting Toolbar for Front -->
+          <div class="flex items-center gap-1">
+            <button type="button" onclick="applyFormat('modalFront', '**', '**')" class="px-2 py-0.5 rounded bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 text-[11px] font-black text-slate-700 dark:text-slate-200" title="볼드체">B</button>
+            <button type="button" onclick="applyFormat('modalFront', '[red]', '[/red]')" class="px-2 py-0.5 rounded bg-rose-100 dark:bg-rose-950/60 hover:bg-rose-200 text-[11px] font-bold text-rose-600 dark:text-rose-400" title="붉은 글씨">🔴 빨강</button>
           </div>
+        </div>
+        <textarea id="modalFront" rows="2" onfocus="setActiveInput('front')" placeholder="예: Darier 병과 Hailey-Hailey 병의 원인 유전자 및 결함 단백" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl p-2.5 text-xs text-slate-900 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500"></textarea>
+      </div>
 
-          <!-- Preview Area -->
-          <div id="imagePreviewBox" class="hidden relative inline-block mt-2">
-            <img id="imagePreviewImg" src="" alt="Preview" class="max-h-36 rounded-xl border border-slate-300 dark:border-slate-700 shadow-sm object-contain bg-slate-900">
-            <button type="button" onclick="event.stopPropagation(); clearImagePreview()" class="absolute -top-2 -right-2 bg-rose-600 hover:bg-rose-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs shadow-md" title="사진 삭제">
+      <!-- 앞면 사진 첨부 -->
+      <div>
+        <div class="flex justify-between items-center mb-1">
+          <span class="text-[11px] font-bold text-indigo-600 dark:text-indigo-400 flex items-center gap-1">
+            <i class="fa-solid fa-image"></i> 앞면 사진 (문제 사진 / 슬라이드)
+          </span>
+          <span class="text-[10px] text-slate-400">앞면 작성 중 캡처 후 Ctrl+V 가능</span>
+        </div>
+        <div id="dropZoneFront" class="border border-dashed border-slate-300 dark:border-slate-700 hover:border-indigo-500 rounded-xl p-3 text-center cursor-pointer bg-slate-50/50 dark:bg-slate-950/50" onclick="document.getElementById('fileInputFront').click()">
+          <input type="file" id="fileInputFront" accept="image/*" class="hidden" onchange="handleFileSelect(event, 'front')">
+          <div id="promptFront" class="text-xs text-slate-500 dark:text-slate-400">
+            <i class="fa-solid fa-cloud-arrow-up text-sm text-indigo-500 mr-1"></i> 앞면 사진 선택 또는 <b>Ctrl + V</b>
+          </div>
+          <div id="previewBoxFront" class="hidden relative inline-block mt-1">
+            <img id="previewImgFront" src="" alt="Front Preview" class="max-h-28 rounded-lg border border-slate-300 dark:border-slate-700 shadow-sm object-contain bg-slate-900">
+            <button type="button" onclick="event.stopPropagation(); clearImage('front')" class="absolute -top-2 -right-2 bg-rose-600 hover:bg-rose-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-[10px] shadow" title="삭제">
               <i class="fa-solid fa-xmark"></i>
             </button>
           </div>
         </div>
+      </div>
 
-        <!-- Or Web Link Input (Foldable) -->
-        <div class="mt-2">
-          <input type="url" id="modalImgUrl" placeholder="또는 이미지 웹 링크 URL 직접 입력" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg p-2 text-[11px] text-slate-700 dark:text-slate-300 focus:outline-none focus:ring-1 focus:ring-indigo-500">
+      <!-- 2. 뒷면 (정답 및 요약) -->
+      <div>
+        <div class="flex justify-between items-center mb-1">
+          <label class="text-xs font-bold text-slate-700 dark:text-slate-300">뒷면 (정답 및 핵심 암기 요약)</label>
+          <!-- Formatting Toolbar for Back -->
+          <div class="flex items-center gap-1">
+            <button type="button" onclick="applyFormat('modalBack', '**', '**')" class="px-2 py-0.5 rounded bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 text-[11px] font-black text-slate-700 dark:text-slate-200" title="굵은 글씨">B 굵게</button>
+            <button type="button" onclick="applyFormat('modalBack', '[red]', '[/red]')" class="px-2 py-0.5 rounded bg-rose-100 dark:bg-rose-950/60 hover:bg-rose-200 text-[11px] font-bold text-rose-600 dark:text-rose-400" title="붉은 글씨">🔴 빨강</button>
+            <button type="button" onclick="applyFormat('modalBack', '[mark]', '[/mark]')" class="px-2 py-0.5 rounded bg-amber-100 dark:bg-amber-950/60 hover:bg-amber-200 text-[11px] font-bold text-amber-700 dark:text-amber-300" title="형광펜">🟡 형광펜</button>
+            <button type="button" onclick="applyFormat('modalBack', '[blue]', '[/blue]')" class="px-2 py-0.5 rounded bg-sky-100 dark:bg-sky-950/60 hover:bg-sky-200 text-[11px] font-bold text-sky-600 dark:text-sky-400" title="파란 글씨">🔵 파랑</button>
+          </div>
+        </div>
+        <textarea id="modalBack" rows="5" onfocus="setActiveInput('back')" placeholder="예: • Darier: [red]ATP2A2[/red] (**SERCA2** 결함, 광선부위 각화성 구진)&#10;• Hailey-Hailey: [red]ATP2C1[/red] (**SPCA1** 결함, 간찰부 수포/미란)" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl p-2.5 text-xs text-slate-900 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 leading-relaxed"></textarea>
+      </div>
+
+      <!-- 뒷면 사진 첨부 -->
+      <div>
+        <div class="flex justify-between items-center mb-1">
+          <span class="text-[11px] font-bold text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
+            <i class="fa-solid fa-image"></i> 뒷면 사진 (정답 도해 / 병리 해설 슬라이드)
+          </span>
+          <span class="text-[10px] text-slate-400">뒷면 작성 중 캡처 후 Ctrl+V 가능</span>
+        </div>
+        <div id="dropZoneBack" class="border border-dashed border-slate-300 dark:border-slate-700 hover:border-emerald-500 rounded-xl p-3 text-center cursor-pointer bg-slate-50/50 dark:bg-slate-950/50" onclick="document.getElementById('fileInputBack').click()">
+          <input type="file" id="fileInputBack" accept="image/*" class="hidden" onchange="handleFileSelect(event, 'back')">
+          <div id="promptBack" class="text-xs text-slate-500 dark:text-slate-400">
+            <i class="fa-solid fa-cloud-arrow-up text-sm text-emerald-500 mr-1"></i> 뒷면 사진 선택 또는 <b>Ctrl + V</b>
+          </div>
+          <div id="previewBoxBack" class="hidden relative inline-block mt-1">
+            <img id="previewImgBack" src="" alt="Back Preview" class="max-h-28 rounded-lg border border-slate-300 dark:border-slate-700 shadow-sm object-contain bg-slate-900">
+            <button type="button" onclick="event.stopPropagation(); clearImage('back')" class="absolute -top-2 -right-2 bg-rose-600 hover:bg-rose-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-[10px] shadow" title="삭제">
+              <i class="fa-solid fa-xmark"></i>
+            </button>
+          </div>
         </div>
       </div>
 
@@ -337,7 +379,7 @@
     // =================================================================
     // [중요] 본인의 Firebase 설정 키를 여기에 그대로 붙여넣으세요!
     // =================================================================
-     const firebaseConfig = {
+  const firebaseConfig = {
       apiKey: "AIzaSyDdWgBFgtd6PvC6DGgTkzcnd1cljjCkxJU",
       authDomain: "dermaboard.firebaseapp.com",
       projectId: "dermaboard",
@@ -384,7 +426,182 @@
     let currentIndex = 0;
     let isFlipped = false;
     let isShuffled = false;
+    let activeTarget = 'front'; // 현재 활성화된 포커스 위치 (front | back)
 
+    function setActiveInput(target) {
+      activeTarget = target;
+    }
+
+    // =================================================================
+    // 텍스트 서식 툴바 및 파서 (Bold, Red, Highlight, Blue)
+    // =================================================================
+    function applyFormat(textareaId, prefix, suffix) {
+      const textarea = document.getElementById(textareaId);
+      const start = textarea.selectionStart;
+      const end = textarea.selectionEnd;
+      const text = textarea.value;
+      const selected = text.substring(start, end) || '키워드';
+      const replacement = prefix + selected + suffix;
+
+      textarea.value = text.substring(0, start) + replacement + text.substring(end);
+      textarea.focus();
+      textarea.selectionStart = start + prefix.length;
+      textarea.selectionEnd = start + prefix.length + selected.length;
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    }
+
+    function parseCardText(rawText) {
+      if (!rawText) return '';
+      let s = escapeHtml(rawText);
+
+      // 볼드: **텍스트**
+      s = s.replace(/\*\*(.*?)\*\*/g, '<strong class="font-extrabold text-indigo-900 dark:text-indigo-200 underline decoration-indigo-300 dark:decoration-indigo-700 underline-offset-2">$1</strong>');
+      
+      // 빨간 글씨: [red]텍스트[/red]
+      s = s.replace(/\[red\](.*?)\[\/red\]/gi, '<span class="text-rose-600 dark:text-rose-400 font-extrabold">$1</span>');
+      
+      // 형광펜: [mark]텍스트[/mark]
+      s = s.replace(/\[mark\](.*?)\[\/mark\]/gi, '<mark class="bg-amber-200 dark:bg-amber-900/60 text-amber-950 dark:text-amber-100 px-1 py-0.5 rounded font-bold">$1</mark>');
+
+      // 파란 글씨: [blue]텍스트[/blue]
+      s = s.replace(/\[blue\](.*?)\[\/blue\]/gi, '<span class="text-sky-600 dark:text-sky-400 font-extrabold">$1</span>');
+
+      return s;
+    }
+
+    // =================================================================
+    // 이미지 압축 및 처리 로직 (앞면/뒷면 분리)
+    // =================================================================
+    function compressImageFile(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = (e) => {
+          const img = new Image();
+          img.src = e.target.result;
+          img.onload = () => {
+            let width = img.width;
+            let height = img.height;
+            const maxDim = 1000;
+
+            if (width > maxDim || height > maxDim) {
+              if (width > height) {
+                height = Math.round((height * maxDim) / width);
+                width = maxDim;
+              } else {
+                width = Math.round((width * maxDim) / height);
+                height = maxDim;
+              }
+            }
+
+            const canvas = document.createElement('canvas');
+            canvas.width = width;
+            canvas.height = height;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, width, height);
+
+            const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.75);
+            resolve(compressedDataUrl);
+          };
+          img.onerror = reject;
+        };
+        reader.onerror = reject;
+      });
+    }
+
+    async function handleFileSelect(event, side) {
+      const file = event.target.files[0];
+      if (!file) return;
+      processSelectedImageFile(file, side);
+    }
+
+    async function processSelectedImageFile(file, side) {
+      if (!file.type.startsWith('image/')) {
+        alert('이미지 파일만 등록할 수 있습니다.');
+        return;
+      }
+      try {
+        const base64 = await compressImageFile(file);
+        setImagePreview(base64, side);
+      } catch (err) {
+        alert('이미지 처리 중 오류가 발생했습니다.');
+      }
+    }
+
+    function setImagePreview(base64, side) {
+      const isFront = side === 'front';
+      const capSide = isFront ? 'Front' : 'Back';
+
+      document.getElementById(`modal${capSide}ImageBase64`).value = base64;
+      document.getElementById(`previewImg${capSide}`).src = base64;
+      document.getElementById(`previewBox${capSide}`).classList.remove('hidden');
+      document.getElementById(`prompt${capSide}`).classList.add('hidden');
+    }
+
+    function clearImage(side) {
+      const isFront = side === 'front';
+      const capSide = isFront ? 'Front' : 'Back';
+
+      document.getElementById(`modal${capSide}ImageBase64`).value = '';
+      document.getElementById(`previewImg${capSide}`).src = '';
+      document.getElementById(`fileInput${capSide}`).value = '';
+      document.getElementById(`previewBox${capSide}`).classList.add('hidden');
+      document.getElementById(`prompt${capSide}`).classList.remove('hidden');
+    }
+
+    function setupPasteAndDrop() {
+      // 1. 붙여넣기 (Ctrl + V) - 현재 포커스에 따라 앞면 또는 뒷면에 자동 첨부
+      window.addEventListener('paste', async (e) => {
+        if (document.getElementById('cardModal').classList.contains('hidden')) return;
+        
+        const items = e.clipboardData?.items;
+        if (!items) return;
+
+        for (let i = 0; i < items.length; i++) {
+          if (items[i].type.indexOf('image') !== -1) {
+            const blob = items[i].getAsFile();
+            processSelectedImageFile(blob, activeTarget);
+            break;
+          }
+        }
+      });
+
+      // 2. 드래그 앤 드롭
+      ['Front', 'Back'].forEach(capSide => {
+        const side = capSide.toLowerCase();
+        const dropZone = document.getElementById(`dropZone${capSide}`);
+
+        ['dragenter', 'dragover'].forEach(name => {
+          dropZone.addEventListener(name, (e) => {
+            e.preventDefault();
+            dropZone.classList.add('border-indigo-500', 'bg-indigo-500/10');
+          }, false);
+        });
+
+        ['dragleave', 'drop'].forEach(name => {
+          dropZone.addEventListener(name, (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('border-indigo-500', 'bg-indigo-500/10');
+          }, false);
+        });
+
+        dropZone.addEventListener('drop', (e) => {
+          const dt = e.dataTransfer;
+          const files = dt.files;
+          if (files.length > 0) {
+            processSelectedImageFile(files[0], side);
+          }
+        }, false);
+      });
+    }
+
+    // =================================================================
+    // 초기화 및 테마
+    // =================================================================
     function initTheme() {
       const savedTheme = localStorage.getItem('derm_theme') || 'dark';
       if (savedTheme === 'light') {
@@ -446,124 +663,7 @@
     }
 
     // =================================================================
-    // 이미지 파일 압축 및 처리 로직 (1000px, 100~200KB 최적화)
-    // =================================================================
-    function compressImageFile(file) {
-      return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.readAsDataURL(file);
-        reader.onload = (e) => {
-          const img = new Image();
-          img.src = e.target.result;
-          img.onload = () => {
-            let width = img.width;
-            let height = img.height;
-            const maxDim = 1000;
-
-            if (width > maxDim || height > maxDim) {
-              if (width > height) {
-                height = Math.round((height * maxDim) / width);
-                width = maxDim;
-              } else {
-                width = Math.round((width * maxDim) / height);
-                height = maxDim;
-              }
-            }
-
-            const canvas = document.createElement('canvas');
-            canvas.width = width;
-            canvas.height = height;
-            const ctx = canvas.getContext('2d');
-            ctx.drawImage(img, 0, 0, width, height);
-
-            // JPEG 75% 압축
-            const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.75);
-            resolve(compressedDataUrl);
-          };
-          img.onerror = reject;
-        };
-        reader.onerror = reject;
-      });
-    }
-
-    async function handleFileSelect(event) {
-      const file = event.target.files[0];
-      if (!file) return;
-      processSelectedImageFile(file);
-    }
-
-    async function processSelectedImageFile(file) {
-      if (!file.type.startsWith('image/')) {
-        alert('이미지 파일만 등록할 수 있습니다.');
-        return;
-      }
-      try {
-        const base64 = await compressImageFile(file);
-        setImagePreview(base64);
-      } catch (err) {
-        alert('이미지 처리 중 오류가 발생했습니다.');
-      }
-    }
-
-    function setImagePreview(base64) {
-      document.getElementById('modalImageBase64').value = base64;
-      document.getElementById('imagePreviewImg').src = base64;
-      document.getElementById('imagePreviewBox').classList.remove('hidden');
-      document.getElementById('uploadPrompt').classList.add('hidden');
-    }
-
-    function clearImagePreview() {
-      document.getElementById('modalImageBase64').value = '';
-      document.getElementById('imagePreviewImg').src = '';
-      document.getElementById('fileUploadInput').value = '';
-      document.getElementById('imagePreviewBox').classList.add('hidden');
-      document.getElementById('uploadPrompt').classList.remove('hidden');
-    }
-
-    // 클립보드 붙여넣기(Ctrl+V) 및 드래그 앤 드롭 리스너
-    function setupPasteAndDrop() {
-      // 1. 붙여넣기 (Ctrl + V)
-      window.addEventListener('paste', async (e) => {
-        // 모달이 열려있을 때만 동작
-        if (document.getElementById('cardModal').classList.contains('hidden')) return;
-        
-        const items = e.clipboardData?.items;
-        if (!items) return;
-
-        for (let i = 0; i < items.length; i++) {
-          if (items[i].type.indexOf('image') !== -1) {
-            const blob = items[i].getAsFile();
-            processSelectedImageFile(blob);
-            break;
-          }
-        }
-      });
-
-      // 2. 드래그 앤 드롭
-      const dropZone = document.getElementById('imageDropZone');
-      ['dragenter', 'dragover'].forEach(name => {
-        dropZone.addEventListener(name, (e) => {
-          e.preventDefault();
-          dropZone.classList.add('border-indigo-500', 'bg-indigo-500/10');
-        }, false);
-      });
-      ['dragleave', 'drop'].forEach(name => {
-        dropZone.addEventListener(name, (e) => {
-          e.preventDefault();
-          dropZone.classList.remove('border-indigo-500', 'bg-indigo-500/10');
-        }, false);
-      });
-      dropZone.addEventListener('drop', (e) => {
-        const dt = e.dataTransfer;
-        const files = dt.files;
-        if (files.length > 0) {
-          processSelectedImageFile(files[0]);
-        }
-      }, false);
-    }
-
-    // =================================================================
-    // 탭 및 필터, 카드 제어
+    // 탭 및 카드 렌더링
     // =================================================================
     function setTab(tab) {
       ['Study', 'Stats', 'List'].forEach(t => {
@@ -643,6 +743,7 @@
         document.getElementById('frontImgContainer').classList.add('hidden');
         document.getElementById('backChapter').innerText = "";
         document.getElementById('backText').innerText = "";
+        document.getElementById('backImgContainer').classList.add('hidden');
         counter.innerText = "0 / 0";
         statusBadge.className = "hidden";
         progressBar.style.width = "0%";
@@ -651,22 +752,33 @@
 
       document.getElementById('frontChapter').innerText = card.chapter;
       document.getElementById('frontYield').innerText = card.highYield ? "★ High-Yield 기출" : "";
-      document.getElementById('frontText').innerText = card.front;
+      document.getElementById('frontText').innerHTML = parseCardText(card.front);
 
-      // 이미지 렌더링 (직접 업로드 Base64 또는 웹 링크 URL)
-      const imgCont = document.getElementById('frontImgContainer');
-      const imgElem = document.getElementById('frontImg');
-      const finalImgSrc = card.imageBase64 || card.imageUrl;
-
-      if (finalImgSrc && finalImgSrc.trim() !== '') {
-        imgElem.src = finalImgSrc;
-        imgCont.classList.remove('hidden');
+      // 1. 앞면 이미지 렌더링 (기존 imageBase64/imageUrl 호환)
+      const frontSrc = card.frontImageBase64 || card.imageBase64 || card.imageUrl || '';
+      const frontImgCont = document.getElementById('frontImgContainer');
+      const frontImgElem = document.getElementById('frontImg');
+      if (frontSrc.trim() !== '') {
+        frontImgElem.src = frontSrc;
+        frontImgCont.classList.remove('hidden');
       } else {
-        imgCont.classList.add('hidden');
+        frontImgCont.classList.add('hidden');
       }
 
+      // 2. 뒷면 텍스트 서식 렌더링
       document.getElementById('backChapter').innerText = card.chapter;
-      document.getElementById('backText').innerText = card.back;
+      document.getElementById('backText').innerHTML = parseCardText(card.back);
+
+      // 3. 뒷면 이미지 렌더링
+      const backSrc = card.backImageBase64 || '';
+      const backImgCont = document.getElementById('backImgContainer');
+      const backImgElem = document.getElementById('backImg');
+      if (backSrc.trim() !== '') {
+        backImgElem.src = backSrc;
+        backImgCont.classList.remove('hidden');
+      } else {
+        backImgCont.classList.add('hidden');
+      }
 
       counter.innerText = `${currentIndex + 1} / ${activeDeck.length}`;
       statusBadge.classList.remove('hidden');
@@ -791,7 +903,8 @@
       }
 
       listContainer.innerHTML = cards.map(c => {
-        const imgSrc = c.imageBase64 || c.imageUrl;
+        const frontSrc = c.frontImageBase64 || c.imageBase64 || c.imageUrl || '';
+        const backSrc = c.backImageBase64 || '';
         return `
         <div class="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 space-y-2 shadow-sm">
           <div class="flex justify-between items-start gap-2">
@@ -802,12 +915,21 @@
               <button onclick="deleteCard('${c.id}')" class="text-xs text-rose-600 dark:text-rose-400 hover:opacity-80 p-1"><i class="fa-solid fa-trash"></i></button>
             </div>
           </div>
-          <p class="text-sm font-bold text-slate-900 dark:text-white leading-snug">${c.front}</p>
-          <div class="text-xs text-slate-700 dark:text-slate-300 bg-slate-50 dark:bg-slate-950 p-3 rounded-xl whitespace-pre-wrap leading-relaxed border border-slate-100 dark:border-slate-800/80">${c.back}</div>
-          ${imgSrc ? `
-            <div class="mt-2">
-              <img src="${imgSrc}" alt="Thumbnail" class="h-20 rounded-lg object-contain border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-950">
-            </div>` : ''}
+          <div class="text-sm font-bold text-slate-900 dark:text-white leading-snug">${parseCardText(c.front)}</div>
+          <div class="text-xs text-slate-700 dark:text-slate-300 bg-slate-50 dark:bg-slate-950 p-3 rounded-xl whitespace-pre-wrap leading-relaxed border border-slate-100 dark:border-slate-800/80">${parseCardText(c.back)}</div>
+          
+          <div class="flex gap-3 pt-1">
+            ${frontSrc ? `
+              <div class="space-y-0.5">
+                <span class="text-[10px] text-slate-400">앞면 사진</span>
+                <img src="${frontSrc}" alt="Front" class="h-16 rounded-lg object-contain border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-950">
+              </div>` : ''}
+            ${backSrc ? `
+              <div class="space-y-0.5">
+                <span class="text-[10px] text-slate-400">뒷면 사진</span>
+                <img src="${backSrc}" alt="Back" class="h-16 rounded-lg object-contain border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-950">
+              </div>` : ''}
+          </div>
         </div>
       `}).join('');
     }
@@ -818,9 +940,10 @@
         document.getElementById('modalDocId').value = '';
         document.getElementById('modalFront').value = '';
         document.getElementById('modalBack').value = '';
-        document.getElementById('modalImgUrl').value = '';
         document.getElementById('modalHighYield').checked = false;
-        clearImagePreview();
+        clearImage('front');
+        clearImage('back');
+        activeTarget = 'front';
         modal.classList.remove('hidden');
       } else {
         modal.classList.add('hidden');
@@ -835,13 +958,19 @@
       document.getElementById('modalChapter').value = card.chapter;
       document.getElementById('modalFront').value = card.front;
       document.getElementById('modalBack').value = card.back;
-      document.getElementById('modalImgUrl').value = card.imageUrl || '';
       document.getElementById('modalHighYield').checked = !!card.highYield;
 
-      if (card.imageBase64) {
-        setImagePreview(card.imageBase64);
+      const frontImg = card.frontImageBase64 || card.imageBase64 || card.imageUrl || '';
+      if (frontImg) {
+        setImagePreview(frontImg, 'front');
       } else {
-        clearImagePreview();
+        clearImage('front');
+      }
+
+      if (card.backImageBase64) {
+        setImagePreview(card.backImageBase64, 'back');
+      } else {
+        clearImage('back');
       }
 
       document.getElementById('cardModal').classList.remove('hidden');
@@ -857,8 +986,8 @@
       const chapter = document.getElementById('modalChapter').value;
       const front = document.getElementById('modalFront').value.trim();
       const back = document.getElementById('modalBack').value.trim();
-      const imageUrl = document.getElementById('modalImgUrl').value.trim();
-      const imageBase64 = document.getElementById('modalImageBase64').value;
+      const frontImageBase64 = document.getElementById('modalFrontImageBase64').value;
+      const backImageBase64 = document.getElementById('modalBackImageBase64').value;
       const highYield = document.getElementById('modalHighYield').checked;
 
       if (!front || !back) {
@@ -870,8 +999,8 @@
         chapter,
         front,
         back,
-        imageUrl,
-        imageBase64: imageBase64 || '',
+        frontImageBase64: frontImageBase64 || '',
+        backImageBase64: backImageBase64 || '',
         highYield,
         updatedAt: Date.now()
       };
@@ -901,8 +1030,9 @@
       }
     }
 
-    function zoomImage() {
-      const src = document.getElementById('frontImg').src;
+    // 사진 확대 모달
+    function zoomImage(imgElementId) {
+      const src = document.getElementById(imgElementId).src;
       if (!src) return;
       document.getElementById('zoomedImg').src = src;
       document.getElementById('imageModal').classList.remove('hidden');
