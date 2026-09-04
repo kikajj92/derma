@@ -64,7 +64,7 @@
       <div class="flex items-center gap-2">
         <button onclick="toggleAiDrawer(true)" class="px-2.5 py-1.5 rounded-xl bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white text-xs font-bold flex items-center gap-1.5 shadow-md shadow-indigo-500/20 transition active:scale-95" title="구글 AI 피부과 튜터 열기">
           <i class="fa-solid fa-wand-magic-sparkles text-amber-300"></i>
-          <span class="hidden sm:inline">AI 검색·튜터</span>
+          <span class="hidden sm:inline">AI 튜터 (Gemini 3)</span>
         </button>
 
         <div id="syncBadge" class="text-xs px-2.5 py-1 rounded-full bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-300 flex items-center gap-1.5 font-medium border border-slate-300/60 dark:border-slate-700">
@@ -280,9 +280,9 @@
         <div>
           <h2 class="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
             피부과 전문의 AI 튜터
-            <span class="text-[10px] px-1.5 py-0.5 rounded bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-400 font-medium">Gemini 3 Flash</span>
+            <span class="text-[10px] px-1.5 py-0.5 rounded bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-400 font-medium">Gemini 3 Free</span>
           </h2>
-          <p class="text-[11px] text-slate-500 dark:text-slate-400">교과서 제7판 & 실시간 의학 검색 연동</p>
+          <p class="text-[11px] text-slate-500 dark:text-slate-400">교과서 제7판 기출 & 심층 고찰</p>
         </div>
       </div>
       <div class="flex items-center gap-2">
@@ -301,18 +301,18 @@
         <p class="font-bold text-indigo-900 dark:text-indigo-100 flex items-center gap-1.5">
           <i class="fa-solid fa-robot text-indigo-500"></i> 피부과 전문의 시험 AI 튜터입니다.
         </p>
-        <p>대한피부과학회 《피부과학 제7판》 및 최신 저널/가이드라인을 실시간 구글 검색하여 답변합니다.</p>
+        <p>대한피부과학회 교과서 《피부과학 제7판》 기준 질환의 임상상, 조직병리학적 특징, 표적 항원, 감별진단을 정리해 드립니다.</p>
         <p class="text-[11px] text-slate-500 dark:text-indigo-300">💡 <b>팁:</b> 아래 추천 질문을 누르거나, 시험에 헷갈리는 질환 감별점을 편하게 물어보세요!</p>
       </div>
     </div>
 
     <!-- Quick Prompts Toolbar -->
     <div class="px-4 py-2 border-t border-slate-100 dark:border-slate-800/80 bg-slate-50/50 dark:bg-slate-950/50 flex gap-1.5 overflow-x-auto text-[11px]">
-      <button onclick="sendQuickPrompt('현재 카드의 병리 소견과 핵심 감별 포인트를 7판 기준으로 정리해줘')" class="whitespace-nowrap px-2.5 py-1 rounded-full bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 text-slate-700 dark:text-slate-300 font-medium">
+      <button onclick="sendQuickPrompt('현재 카드의 병리 소견과 핵심 감별 포인트를 7판 기준으로 일목요연하게 정리해줘')" class="whitespace-nowrap px-2.5 py-1 rounded-full bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 text-slate-700 dark:text-slate-300 font-medium">
         📋 이 카드 심층 분석
       </button>
-      <button onclick="sendQuickPrompt('이 질환의 최신 1차 치료제와 FDA 승인 신약 가이드라인을 검색해줘')" class="whitespace-nowrap px-2.5 py-1 rounded-full bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 text-slate-700 dark:text-slate-300 font-medium">
-        🔍 최신 치료제 검색
+      <button onclick="sendQuickPrompt('이 질환의 1차 치료제와 치료 알고리즘을 7판 기준으로 요약해줘')" class="whitespace-nowrap px-2.5 py-1 rounded-full bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 text-slate-700 dark:text-slate-300 font-medium">
+        💊 1차 치료 요약
       </button>
     </div>
 
@@ -339,8 +339,8 @@
       </div>
 
       <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
-        구글 AI 검색을 사용하려면 개인 Gemini API 키가 필요합니다.<br>
-        무료로 1분 만에 발급받으실 수 있습니다.
+        Google AI Studio에서 발급받은 무료 API 키를 입력하세요.<br>
+        본인의 브라우저에만 안전하게 보관됩니다.
       </p>
 
       <div>
@@ -1099,7 +1099,7 @@
     }
 
     // =================================================================
-    // AI 챗봇 및 검색 엔진 (Gemini 3 Flash Preview 연동)
+    // AI 챗봇 (최상위 무료 모델 Gemini 3 Flash + 3단계 무중단 Fallback)
     // =================================================================
     function toggleAiDrawer(show) {
       const drawer = document.getElementById('aiDrawer');
@@ -1143,7 +1143,7 @@
       const card = activeDeck[currentIndex];
       if (!card) return;
       toggleAiDrawer(true);
-      const prompt = `[${card.chapter}]\n문제: ${card.front}\n핵심: ${card.back}\n\n이 질환/주제에 대해 피부과학 제7판 및 최신 가이드라인 기준으로 조직병리 소견, 표적 항원, 감별진단 포인트를 일목요연하게 심층 해설해줘.`;
+      const prompt = `[${card.chapter}]\n문제: ${card.front}\n핵심: ${card.back}\n\n이 질환/주제에 대해 피부과학 제7판 기준으로 핵심 조직병리 소견, 표적 항원/유전자, 감별진단 포인트를 일목요연하게 심층 해설해줘.`;
       callGeminiApi(prompt);
     }
 
@@ -1188,7 +1188,7 @@
         <div id="${loadingId}" class="flex justify-start">
           <div class="bg-slate-100 dark:bg-slate-800 p-3 rounded-2xl max-w-[85%] text-slate-500 dark:text-slate-400 flex items-center gap-2">
             <i class="fa-solid fa-circle-notch fa-spin text-indigo-500"></i>
-            <span>Google AI 검색 및 교과서 고찰 중...</span>
+            <span>Gemini 3 Flash가 교과서 내용을 심층 분석 중입니다...</span>
           </div>
         </div>
       `;
@@ -1199,49 +1199,56 @@
         parts: [{ text: userMessage }]
       });
 
-      try {
-        // [수정 완료] Google AI Studio 최신 모델인 gemini-3-flash-preview 호출
-        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            contents: aiConversationHistory,
-            systemInstruction: {
-              parts: [{ text: "당신은 대한민국 피부과 전문의 1차, 2차 시험 대비를 지도하는 최고 권위의 메디컬 AI 튜터입니다. 반드시 대한피부과학회 교과서 《피부과학 제7판》의 공식 용어와 최신 공인 진료지침을 기준으로 답변하세요. 기출 핵심(조직학적 특징, 표적 항원/유전자, 1차 치료제)을 명확한 볼드체와 불릿으로 가독성 높게 요약하세요." }]
-            },
-           
-          })
-        });
+      // [핵심] 무료 티어 최상위 모델 순차 시도 (1순위: Gemini 3 Flash -> 2순위: 3.5 Flash -> 3순위: 3.1 Flash-Lite)
+      const candidateModels = [
+        "gemini-3-flash-preview",
+        "gemini-3.5-flash",
+        "gemini-3.1-flash-lite"
+      ];
 
-        const data = await response.json();
-        const loadingElem = document.getElementById(loadingId);
-        if (loadingElem) loadingElem.remove();
+      let successData = null;
+      let lastErrorMsg = '';
 
-        if (data.error) {
-          throw new Error(data.error.message || 'API 호출 오류');
+      for (const modelName of candidateModels) {
+        try {
+          const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${apiKey}`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              contents: aiConversationHistory,
+              systemInstruction: {
+                parts: [{ text: "당신은 대한민국 피부과 전문의 1차, 2차 시험 대비를 지도하는 최고 권위의 메디컬 AI 튜터입니다. 반드시 대한피부과학회 교과서 《피부과학 제7판》의 공식 용어와 공인 지침을 기준으로 답변하세요. 기출 핵심(조직학적 특징, 표적 항원/유전자, 1차 치료제)을 명확한 볼드체와 불릿으로 가독성 높게 요약하세요." }]
+              }
+            })
+          });
+
+          const data = await response.json();
+          if (data.error) {
+            lastErrorMsg = data.error.message || 'API 오류';
+            console.warn(`[${modelName}] 실패, 다음 무료 모델로 시도:`, data.error);
+            continue;
+          }
+
+          if (data.candidates?.[0]?.content) {
+            successData = data;
+            break; // 성공 시 즉시 루프 탈출
+          }
+        } catch (err) {
+          lastErrorMsg = err.message;
+          console.warn(`[${modelName}] 네트워크 실패:`, err);
         }
+      }
 
-        const candidate = data.candidates?.[0];
-        const aiText = candidate?.content?.parts?.[0]?.text || "답변을 생성하지 못했습니다.";
+      const loadingElem = document.getElementById(loadingId);
+      if (loadingElem) loadingElem.remove();
+
+      if (successData) {
+        const candidate = successData.candidates[0];
+        const aiText = candidate.content.parts?.[0]?.text || "답변을 생성하지 못했습니다.";
         aiConversationHistory.push({
           role: "model",
           parts: [{ text: aiText }]
         });
-
-        let sourcesHtml = '';
-        const searchChunks = candidate?.groundingMetadata?.groundingChunks;
-        if (searchChunks && searchChunks.length > 0) {
-          const links = searchChunks
-            .filter(c => c.web?.uri)
-            .slice(0, 3)
-            .map(c => `<a href="${c.web.uri}" target="_blank" class="underline text-sky-500 truncate max-w-[200px] block">${c.web.title || c.web.uri}</a>`)
-            .join('');
-          if (links) {
-            sourcesHtml = `<div class="mt-2 pt-2 border-t border-slate-200 dark:border-slate-700 text-[10px] text-slate-400">
-              <span class="font-bold"><i class="fa-solid fa-magnifying-glass"></i> 검색 출처:</span> ${links}
-            </div>`;
-          }
-        }
 
         const answerId = 'ans_' + Date.now();
         window[answerId] = { question: userMessage, answer: aiText };
@@ -1250,7 +1257,6 @@
           <div class="flex justify-start">
             <div class="bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 p-3.5 rounded-2xl max-w-[90%] text-slate-800 dark:text-slate-100 shadow-sm space-y-2">
               <div class="leading-relaxed whitespace-pre-wrap">${parseAiMarkdown(aiText)}</div>
-              ${sourcesHtml}
               <div class="pt-2 flex justify-end">
                 <button type="button" onclick="saveAiAnswerAsCard('${answerId}')" class="px-2.5 py-1 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-[11px] font-bold flex items-center gap-1 shadow transition">
                   <i class="fa-solid fa-file-circle-plus"></i> 이 내용을 새 카드로 등록
@@ -1259,23 +1265,17 @@
             </div>
           </div>
         `;
-        chatBox.scrollTop = chatBox.scrollHeight;
-
-      } catch (err) {
-        const loadingElem = document.getElementById(loadingId);
-        if (loadingElem) loadingElem.remove();
-
+      } else {
         chatBox.innerHTML += `
           <div class="flex justify-start">
             <div class="bg-rose-50 dark:bg-rose-950/60 border border-rose-200 dark:border-rose-900 p-3 rounded-2xl max-w-[85%] text-rose-600 dark:text-rose-400 text-xs">
-              <p class="font-bold"><i class="fa-solid fa-triangle-exclamation"></i> 오류가 발생했습니다.</p>
-              <p class="text-[11px] mt-1">${err.message}</p>
-              <p class="text-[10px] mt-2 underline cursor-pointer" onclick="openAiKeyModal()">API 키를 다시 설정하려면 여기를 누르세요.</p>
+              <p class="font-bold"><i class="fa-solid fa-triangle-exclamation"></i> 호출 실패</p>
+              <p class="text-[11px] mt-1">${lastErrorMsg}</p>
             </div>
           </div>
         `;
-        chatBox.scrollTop = chatBox.scrollHeight;
       }
+      chatBox.scrollTop = chatBox.scrollHeight;
     }
 
     function saveAiAnswerAsCard(storageKey) {
