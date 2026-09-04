@@ -62,11 +62,19 @@
       </div>
 
       <div class="flex items-center gap-2">
+        <!-- AI Assistant Button -->
+        <button onclick="toggleAiDrawer(true)" class="px-2.5 py-1.5 rounded-xl bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white text-xs font-bold flex items-center gap-1.5 shadow-md shadow-indigo-500/20 transition active:scale-95" title="구글 AI 피부과 튜터 열기">
+          <i class="fa-solid fa-wand-magic-sparkles text-amber-300"></i>
+          <span class="hidden sm:inline">AI 검색·튜터</span>
+        </button>
+
+        <!-- Sync Badge -->
         <div id="syncBadge" class="text-xs px-2.5 py-1 rounded-full bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-300 flex items-center gap-1.5 font-medium border border-slate-300/60 dark:border-slate-700">
           <span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
           <span class="hidden sm:inline">동기화 대기</span>
         </div>
 
+        <!-- Dark/Light Theme -->
         <button onclick="toggleTheme()" class="w-9 h-9 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-amber-400 flex items-center justify-center border border-slate-200 dark:border-slate-700 transition" title="다크/라이트 모드 전환">
           <i id="themeIcon" class="fa-solid fa-moon"></i>
         </button>
@@ -89,9 +97,14 @@
       </button>
     </nav>
 
-    <button onclick="toggleAddModal(true)" class="w-full sm:w-auto px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs sm:text-sm font-bold flex items-center justify-center gap-2 transition shadow-md shadow-indigo-600/20 active:scale-95">
-      <i class="fa-solid fa-plus"></i> <span>새 카드 등록</span>
-    </button>
+    <div class="flex items-center gap-2">
+      <button onclick="toggleAiDrawer(true)" class="sm:hidden flex-1 px-3.5 py-2 rounded-xl bg-violet-600 text-white text-xs font-bold flex items-center justify-center gap-1.5 shadow">
+        <i class="fa-solid fa-wand-magic-sparkles text-amber-300"></i> AI 튜터
+      </button>
+      <button onclick="toggleAddModal(true)" class="flex-1 sm:flex-initial px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs sm:text-sm font-bold flex items-center justify-center gap-2 transition shadow-md shadow-indigo-600/20 active:scale-95">
+        <i class="fa-solid fa-plus"></i> <span>새 카드 등록</span>
+      </button>
+    </div>
   </div>
 
   <!-- MAIN VIEW -->
@@ -132,7 +145,13 @@
             <div>
               <div class="flex justify-between items-start gap-2 mb-3">
                 <span id="frontChapter" class="text-xs font-bold px-3 py-1 rounded-full bg-indigo-50 dark:bg-indigo-950/80 text-indigo-700 dark:text-indigo-300 border border-indigo-100 dark:border-indigo-800/60"></span>
-                <span id="frontYield" class="text-xs font-bold px-2.5 py-1 rounded-full bg-amber-100 dark:bg-amber-500/10 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-500/20"></span>
+                <div class="flex items-center gap-2">
+                  <!-- Ask AI about this Card Button -->
+                  <button type="button" onclick="event.stopPropagation(); askAiAboutCurrentCard()" class="text-xs font-bold px-2.5 py-1 rounded-full bg-violet-100 dark:bg-violet-950/80 text-violet-700 dark:text-violet-300 border border-violet-200 dark:border-violet-800 hover:opacity-80 flex items-center gap-1 transition">
+                    <i class="fa-solid fa-wand-magic-sparkles text-amber-500"></i> AI 심층 질의
+                  </button>
+                  <span id="frontYield" class="text-xs font-bold px-2.5 py-1 rounded-full bg-amber-100 dark:bg-amber-500/10 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-500/20"></span>
+                </div>
               </div>
               <div class="text-[11px] font-bold tracking-widest text-slate-400 dark:text-slate-500 mb-2 uppercase flex items-center gap-1.5">
                 <i class="fa-regular fa-circle-question text-indigo-500"></i> QUESTION / KEY POINT
@@ -252,6 +271,98 @@
 
   </main>
 
+  <!-- ==================== AI SEARCH & TUTOR CHAT DRAWER ==================== -->
+  <div id="aiDrawerBackdrop" class="fixed inset-0 bg-slate-950/60 backdrop-blur-sm z-50 hidden transition-opacity" onclick="toggleAiDrawer(false)"></div>
+  <aside id="aiDrawer" class="fixed top-0 right-0 h-full w-full sm:w-[460px] bg-white dark:bg-slate-900 border-l border-slate-200 dark:border-slate-800 shadow-2xl z-50 transform translate-x-full transition-transform duration-300 ease-out flex flex-col">
+    
+    <!-- Drawer Header -->
+    <div class="p-4 border-b border-slate-200 dark:border-slate-800 flex justify-between items-center bg-slate-50 dark:bg-slate-950">
+      <div class="flex items-center gap-2.5">
+        <div class="w-8 h-8 rounded-xl bg-gradient-to-tr from-violet-600 to-indigo-600 flex items-center justify-center text-white text-sm shadow">
+          <i class="fa-solid fa-wand-magic-sparkles text-amber-300"></i>
+        </div>
+        <div>
+          <h2 class="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
+            피부과 전문의 AI 튜터
+            <span class="text-[10px] px-1.5 py-0.5 rounded bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-400 font-medium">Google AI</span>
+          </h2>
+          <p class="text-[11px] text-slate-500 dark:text-slate-400">교과서 제7판 & 실시간 의학 검색 연동</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-2">
+        <button onclick="openAiKeyModal()" class="text-xs px-2 py-1 rounded-lg bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 text-slate-600 dark:text-slate-300 font-medium" title="API 키 설정">
+          <i class="fa-solid fa-key"></i>
+        </button>
+        <button onclick="toggleAiDrawer(false)" class="w-8 h-8 rounded-full hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-500 dark:text-slate-400 flex items-center justify-center text-base">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Drawer Chat Messages Area -->
+    <div id="aiChatBox" class="flex-1 p-4 overflow-y-auto space-y-3 text-xs leading-relaxed">
+      <div class="bg-indigo-50 dark:bg-indigo-950/60 p-3.5 rounded-2xl border border-indigo-100 dark:border-indigo-900/60 text-slate-700 dark:text-indigo-200 space-y-1.5">
+        <p class="font-bold text-indigo-900 dark:text-indigo-100 flex items-center gap-1.5">
+          <i class="fa-solid fa-robot text-indigo-500"></i> 피부과 전문의 시험 AI 튜터입니다.
+        </p>
+        <p>대한피부과학회 《피부과학 제7판》 및 최신 저널/가이드라인을 실시간 구글 검색하여 답변합니다.</p>
+        <p class="text-[11px] text-slate-500 dark:text-indigo-300">💡 <b>팁:</b> 아래 추천 질문을 누르거나, 시험에 헷갈리는 질환 감별점을 편하게 물어보세요!</p>
+      </div>
+    </div>
+
+    <!-- Quick Prompts Toolbar -->
+    <div class="px-4 py-2 border-t border-slate-100 dark:border-slate-800/80 bg-slate-50/50 dark:bg-slate-950/50 flex gap-1.5 overflow-x-auto text-[11px]">
+      <button onclick="sendQuickPrompt('현재 카드의 병리 소견과 핵심 감별 포인트를 7판 기준으로 정리해줘')" class="whitespace-nowrap px-2.5 py-1 rounded-full bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 text-slate-700 dark:text-slate-300 font-medium">
+        📋 이 카드 심층 분석
+      </button>
+      <button onclick="sendQuickPrompt('이 질환의 최신 1차 치료제와 FDA 승인 신약 가이드라인을 검색해줘')" class="whitespace-nowrap px-2.5 py-1 rounded-full bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 text-slate-700 dark:text-slate-300 font-medium">
+        🔍 최신 치료제 검색
+      </button>
+    </div>
+
+    <!-- Drawer Input Area -->
+    <div class="p-3 border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
+      <form onsubmit="handleAiSubmit(event)" class="flex gap-2">
+        <input type="text" id="aiInput" placeholder="질환명, 조직병리, 면역형광검사 등 질문 입력..." class="flex-1 bg-slate-100 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+        <button type="submit" id="aiSendBtn" class="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-bold transition flex items-center justify-center">
+          <i class="fa-solid fa-paper-plane"></i>
+        </button>
+      </form>
+    </div>
+
+  </aside>
+
+  <!-- GEMINI API KEY MODAL -->
+  <div id="aiKeyModal" class="fixed inset-0 bg-slate-950/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-4">
+      <div class="flex justify-between items-center pb-2 border-b border-slate-100 dark:border-slate-800">
+        <h3 class="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
+          <i class="fa-solid fa-key text-amber-500"></i> Google Gemini API 키 설정
+        </h3>
+        <button onclick="closeAiKeyModal()" class="w-8 h-8 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400 flex items-center justify-center text-base"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+
+      <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
+        구글 AI 검색을 사용하려면 개인 Gemini API 키가 필요합니다.<br>
+        무료로 1분 만에 발급받으실 수 있습니다.
+      </p>
+
+      <div>
+        <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Gemini API Key</label>
+        <input type="password" id="inputGeminiApiKey" placeholder="AIzaSy..." class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl p-2.5 text-xs text-slate-900 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+      </div>
+
+      <div class="bg-indigo-50 dark:bg-indigo-950/50 p-3 rounded-xl text-[11px] text-indigo-700 dark:text-indigo-300">
+        👉 <a href="https://aistudio.google.com/" target="_blank" class="underline font-bold text-indigo-600 dark:text-indigo-400">Google AI Studio (무료 발급 링크)</a>에 접속하여 <b>[Get API key]</b>를 클릭하세요.
+      </div>
+
+      <div class="flex gap-2 pt-2">
+        <button onclick="closeAiKeyModal()" class="flex-1 py-2.5 rounded-xl bg-slate-200 dark:bg-slate-800 text-xs font-bold text-slate-700 dark:text-slate-300">취소</button>
+        <button onclick="saveGeminiApiKey()" class="flex-1 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-xs font-bold text-white shadow">저장하기</button>
+      </div>
+    </div>
+  </div>
+
   <!-- ==================== ADD / EDIT MODAL ==================== -->
   <div id="cardModal" class="fixed inset-0 bg-slate-950/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
     <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl max-w-xl w-full p-6 shadow-2xl space-y-4 max-h-[92vh] overflow-y-auto">
@@ -355,7 +466,7 @@
     // =================================================================
     // [중요] 본인의 Firebase 설정 키를 여기에 그대로 붙여넣으세요!
     // =================================================================
-      const firebaseConfig = {
+  const firebaseConfig = {
       apiKey: "AIzaSyDdWgBFgtd6PvC6DGgTkzcnd1cljjCkxJU",
       authDomain: "dermaboard.firebaseapp.com",
       projectId: "dermaboard",
@@ -407,12 +518,14 @@
     let tempFrontImages = [];
     let tempBackImages = [];
 
-    // 스와이프 및 클릭 구분 변수
     let touchStartX = 0;
     let touchStartY = 0;
     let touchEndX = 0;
     let touchEndY = 0;
     let isSwiping = false;
+
+    // AI 대화 히스토리
+    let aiConversationHistory = [];
 
     function setActiveInput(target) {
       activeTarget = target;
@@ -446,6 +559,16 @@
       s = s.replace(/\[mark\](.*?)\[\/mark\]/gi, '<mark class="bg-amber-200 dark:bg-amber-900/60 text-amber-950 dark:text-amber-100 px-1 py-0.5 rounded font-bold">$1</mark>');
       s = s.replace(/\[blue\](.*?)\[\/blue\]/gi, '<span class="text-sky-600 dark:text-sky-400 font-extrabold">$1</span>');
 
+      return s;
+    }
+
+    // AI 마크다운 변환기 (챗봇용)
+    function parseAiMarkdown(text) {
+      if (!text) return '';
+      let s = escapeHtml(text);
+      s = s.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+      s = s.replace(/^\* (.*?)$/gm, '• $1');
+      s = s.replace(/\n/g, '<br>');
       return s;
     }
 
@@ -542,9 +665,6 @@
       renderModalImagePreviews(side);
     }
 
-    // =================================================================
-    // 모바일 터치 스와이프 및 제스처 등록
-    // =================================================================
     function setupSwipeAndGestures() {
       const area = document.getElementById('cardTouchArea');
 
@@ -560,7 +680,6 @@
         handleSwipeGesture();
       }, { passive: true });
 
-      // 클릭 이벤트 (스와이프가 아니었을 때만 카드 뒤집기)
       area.addEventListener('click', (e) => {
         if (isSwiping) {
           isSwiping = false;
@@ -573,16 +692,13 @@
     function handleSwipeGesture() {
       const diffX = touchEndX - touchStartX;
       const diffY = touchEndY - touchStartY;
-      const threshold = 45; // 최소 스와이프 거리
+      const threshold = 45;
 
-      // 수평 이동 거리가 수직 이동 거리보다 확실히 클 때만 스와이프로 판정
       if (Math.abs(diffX) >= threshold && Math.abs(diffX) > Math.abs(diffY) * 1.3) {
         isSwiping = true;
         if (diffX < 0) {
-          // 좌측으로 스와이프 -> 다음 카드
           nextCard();
         } else {
-          // 우측으로 스와이프 -> 이전 카드
           prevCard();
         }
         setTimeout(() => { isSwiping = false; }, 250);
@@ -803,7 +919,6 @@
       document.getElementById('frontYield').innerText = card.highYield ? "★ High-Yield 기출" : "";
       document.getElementById('frontText').innerHTML = parseCardText(card.front);
 
-      // [핵심] 사진 본체(img)와 돋보기 버튼에만 zoom 이벤트 바인딩. 여백(div)에는 절대 zoom이 걸리지 않음
       const frontImgs = getCardImages(card, 'front');
       if (frontImgs.length > 0) {
         frontGallery.classList.remove('hidden');
@@ -899,6 +1014,8 @@
       window.addEventListener('keydown', (e) => {
         if (!document.getElementById('cardModal').classList.contains('hidden')) return;
         if (!document.getElementById('imageModal').classList.contains('hidden')) return;
+        if (!document.getElementById('aiKeyModal').classList.contains('hidden')) return;
+        if (document.getElementById('aiDrawer').classList.contains('translate-x-0')) return;
         if (['input', 'textarea'].includes(document.activeElement.tagName.toLowerCase())) return;
 
         if (e.code === 'Space') {
@@ -987,6 +1104,209 @@
       `}).join('');
     }
 
+    // =================================================================
+    // AI 챗봇 및 검색 엔진 (Gemini 2.5 Flash + Google Search)
+    // =================================================================
+    function toggleAiDrawer(show) {
+      const drawer = document.getElementById('aiDrawer');
+      const backdrop = document.getElementById('aiDrawerBackdrop');
+      if (show) {
+        backdrop.classList.remove('hidden');
+        drawer.classList.remove('translate-x-full');
+        drawer.classList.add('translate-x-0');
+        // API 키 미등록 시 자동 팝업
+        if (!localStorage.getItem('derm_gemini_api_key')) {
+          setTimeout(openAiKeyModal, 400);
+        }
+      } else {
+        drawer.classList.remove('translate-x-0');
+        drawer.classList.add('translate-x-full');
+        backdrop.classList.add('hidden');
+      }
+    }
+
+    function openAiKeyModal() {
+      document.getElementById('inputGeminiApiKey').value = localStorage.getItem('derm_gemini_api_key') || '';
+      document.getElementById('aiKeyModal').classList.remove('hidden');
+    }
+
+    function closeAiKeyModal() {
+      document.getElementById('aiKeyModal').classList.add('hidden');
+    }
+
+    function saveGeminiApiKey() {
+      const key = document.getElementById('inputGeminiApiKey').value.trim();
+      if (key) {
+        localStorage.setItem('derm_gemini_api_key', key);
+        alert('Gemini API 키가 저장되었습니다!');
+      } else {
+        localStorage.removeItem('derm_gemini_api_key');
+        alert('API 키가 삭제되었습니다.');
+      }
+      closeAiKeyModal();
+    }
+
+    function askAiAboutCurrentCard() {
+      const card = activeDeck[currentIndex];
+      if (!card) return;
+      toggleAiDrawer(true);
+      const prompt = `[${card.chapter}]\n문제: ${card.front}\n핵심: ${card.back}\n\n이 질환/주제에 대해 피부과학 제7판 및 최신 가이드라인 기준으로 조직병리 소견, 표적 항원, 감별진단 포인트를 일목요연하게 심층 해설해줘.`;
+      callGeminiApi(prompt);
+    }
+
+    function sendQuickPrompt(promptText) {
+      const card = activeDeck[currentIndex];
+      if (!card) {
+        callGeminiApi(promptText);
+        return;
+      }
+      const fullPrompt = `현재 보고 있는 카드: [${card.chapter}] ${card.front}\n요청사항: ${promptText}`;
+      callGeminiApi(fullPrompt);
+    }
+
+    function handleAiSubmit(e) {
+      e.preventDefault();
+      const input = document.getElementById('aiInput');
+      const text = input.value.trim();
+      if (!text) return;
+      input.value = '';
+      callGeminiApi(text);
+    }
+
+    async function callGeminiApi(userMessage) {
+      const apiKey = localStorage.getItem('derm_gemini_api_key');
+      if (!apiKey) {
+        openAiKeyModal();
+        return;
+      }
+
+      const chatBox = document.getElementById('aiChatBox');
+
+      // 1. 유저 메시지 렌더링
+      chatBox.innerHTML += `
+        <div class="flex justify-end">
+          <div class="bg-indigo-600 text-white p-3 rounded-2xl max-w-[85%] font-medium">
+            ${escapeHtml(userMessage).replace(/\n/g, '<br>')}
+          </div>
+        </div>
+      `;
+
+      // 2. 로딩 말풍선 렌더링
+      const loadingId = 'aiLoading_' + Date.now();
+      chatBox.innerHTML += `
+        <div id="${loadingId}" class="flex justify-start">
+          <div class="bg-slate-100 dark:bg-slate-800 p-3 rounded-2xl max-w-[85%] text-slate-500 dark:text-slate-400 flex items-center gap-2">
+            <i class="fa-solid fa-circle-notch fa-spin text-indigo-500"></i>
+            <span>Google AI 검색 및 교과서 고찰 중...</span>
+          </div>
+        </div>
+      `;
+      chatBox.scrollTop = chatBox.scrollHeight;
+
+      // 대화 히스토리 구성
+      aiConversationHistory.push({
+        role: "user",
+        parts: [{ text: userMessage }]
+      });
+
+      try {
+        // Gemini 2.5 Flash + Google Search Grounding 호출
+        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            contents: aiConversationHistory,
+            systemInstruction: {
+              parts: [{ text: "당신은 대한민국 피부과 전문의 1차, 2차 시험 대비를 지도하는 최고 권위의 메디컬 AI 튜터입니다. 반드시 대한피부과학회 교과서 《피부과학 제7판》의 공식 용어와 최신 공인 진료지침을 기준으로 답변하세요. 기출 핵심(조직학적 특징, 표적 항원/유전자, 1차 치료제)을 명확한 볼드체와 불릿으로 가독성 높게 요약하세요." }]
+            },
+            tools: [{ googleSearch: {} }] // 실시간 구글 검색 활성화
+          })
+        });
+
+        const data = await response.json();
+        const loadingElem = document.getElementById(loadingId);
+        if (loadingElem) loadingElem.remove();
+
+        if (data.error) {
+          throw new Error(data.error.message || 'API 호출 오류');
+        }
+
+        const candidate = data.candidates?.[0];
+        const aiText = candidate?.content?.parts?.[0]?.text || "답변을 생성하지 못했습니다.";
+        aiConversationHistory.push({
+          role: "model",
+          parts: [{ text: aiText }]
+        });
+
+        // 실시간 검색 출처(Grounding) 링크 확인
+        let sourcesHtml = '';
+        const searchChunks = candidate?.groundingMetadata?.groundingChunks;
+        if (searchChunks && searchChunks.length > 0) {
+          const links = searchChunks
+            .filter(c => c.web?.uri)
+            .slice(0, 3)
+            .map(c => `<a href="${c.web.uri}" target="_blank" class="underline text-sky-500 truncate max-w-[200px] block">${c.web.title || c.web.uri}</a>`)
+            .join('');
+          if (links) {
+            sourcesHtml = `<div class="mt-2 pt-2 border-t border-slate-200 dark:border-slate-700 text-[10px] text-slate-400">
+              <span class="font-bold"><i class="fa-solid fa-magnifying-glass"></i> 검색 출처:</span> ${links}
+            </div>`;
+          }
+        }
+
+        // 3. AI 답변 렌더링 및 '카드로 등록' 버튼 부착
+        const answerId = 'ans_' + Date.now();
+        window[answerId] = { question: userMessage, answer: aiText };
+
+        chatBox.innerHTML += `
+          <div class="flex justify-start">
+            <div class="bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 p-3.5 rounded-2xl max-w-[90%] text-slate-800 dark:text-slate-100 shadow-sm space-y-2">
+              <div class="leading-relaxed whitespace-pre-wrap">${parseAiMarkdown(aiText)}</div>
+              ${sourcesHtml}
+              <div class="pt-2 flex justify-end">
+                <button type="button" onclick="saveAiAnswerAsCard('${answerId}')" class="px-2.5 py-1 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-[11px] font-bold flex items-center gap-1 shadow transition">
+                  <i class="fa-solid fa-file-circle-plus"></i> 이 내용을 새 카드로 등록
+                </button>
+              </div>
+            </div>
+          </div>
+        `;
+        chatBox.scrollTop = chatBox.scrollHeight;
+
+      } catch (err) {
+        const loadingElem = document.getElementById(loadingId);
+        if (loadingElem) loadingElem.remove();
+
+        chatBox.innerHTML += `
+          <div class="flex justify-start">
+            <div class="bg-rose-50 dark:bg-rose-950/60 border border-rose-200 dark:border-rose-900 p-3 rounded-2xl max-w-[85%] text-rose-600 dark:text-rose-400 text-xs">
+              <p class="font-bold"><i class="fa-solid fa-triangle-exclamation"></i> 오류가 발생했습니다.</p>
+              <p class="text-[11px] mt-1">${err.message}</p>
+              <p class="text-[10px] mt-2 underline cursor-pointer" onclick="openAiKeyModal()">API 키를 다시 설정하려면 여기를 누르세요.</p>
+            </div>
+          </div>
+        `;
+        chatBox.scrollTop = chatBox.scrollHeight;
+      }
+    }
+
+    // AI 답변을 1초 만에 새 카드로 복사
+    function saveAiAnswerAsCard(storageKey) {
+      const data = window[storageKey];
+      if (!data) return;
+
+      toggleAiDrawer(false);
+      toggleAddModal(true);
+
+      const currentCh = activeDeck[currentIndex]?.chapter || CHAPTERS[0];
+      document.getElementById('modalChapter').value = currentCh;
+      document.getElementById('modalFront').value = data.question.replace(/\[.*?\]/g, '').trim().slice(0, 100);
+      document.getElementById('modalBack').value = data.answer.trim();
+    }
+
+    // =================================================================
+    // 모달 관리
+    // =================================================================
     function toggleAddModal(show) {
       const modal = document.getElementById('cardModal');
       if (show) {
