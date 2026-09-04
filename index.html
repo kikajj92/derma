@@ -123,9 +123,9 @@
         <div id="deckProgressBar" class="bg-indigo-600 dark:bg-indigo-500 h-1.5 rounded-full transition-all duration-300" style="width: 0%"></div>
       </div>
 
-      <!-- 3D Flashcard Box -->
-      <div class="perspective-1000 w-full min-h-[400px] sm:min-h-[460px] select-none cursor-pointer" onclick="flipCard()">
-        <div id="flashcardBox" class="relative w-full min-h-[400px] sm:min-h-[460px] transform-style-3d transition-transform duration-500 ease-out shadow-lg shadow-slate-300/40 dark:shadow-2xl dark:shadow-black/60 rounded-3xl">
+      <!-- 3D Flashcard Box with Swipe & Tap Handlers -->
+      <div id="cardTouchArea" class="perspective-1000 w-full min-h-[420px] sm:min-h-[480px] select-none cursor-pointer">
+        <div id="flashcardBox" class="relative w-full min-h-[420px] sm:min-h-[480px] transform-style-3d transition-transform duration-500 ease-out shadow-lg shadow-slate-300/40 dark:shadow-2xl dark:shadow-black/60 rounded-3xl">
           
           <!-- FRONT FACE -->
           <div class="absolute inset-0 backface-hidden bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 rounded-3xl p-6 sm:p-8 flex flex-col justify-between transition-colors overflow-y-auto">
@@ -139,18 +139,13 @@
               </div>
               <h2 id="frontText" class="text-base sm:text-xl font-bold text-slate-900 dark:text-white leading-relaxed break-words whitespace-pre-wrap"></h2>
               
-              <!-- Front Image -->
-              <div id="frontImgContainer" class="mt-4 hidden" onclick="event.stopPropagation(); zoomImage('frontImg')">
-                <div class="relative group inline-block">
-                  <img id="frontImg" src="" alt="Front Slide" class="max-h-56 rounded-xl object-contain bg-slate-100 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 shadow-sm transition group-hover:opacity-90">
-                  <span class="absolute bottom-2 right-2 bg-black/75 text-white text-[10px] px-2 py-0.5 rounded-md backdrop-blur flex items-center gap-1">
-                    <i class="fa-solid fa-magnifying-glass-plus"></i> 앞면 사진 확대
-                  </span>
-                </div>
+              <!-- Front Multi-Image Gallery -->
+              <div id="frontGallery" class="mt-4 hidden" onclick="event.stopPropagation()">
+                <div id="frontGalleryGrid" class="grid grid-cols-2 sm:grid-cols-3 gap-2.5"></div>
               </div>
             </div>
             <div class="flex justify-between items-center pt-4 border-t border-slate-100 dark:border-slate-800 text-xs text-slate-400 dark:text-slate-500 mt-4">
-              <span class="flex items-center gap-1.5 font-medium"><i class="fa-regular fa-hand-pointer text-indigo-500"></i> 터치하여 정답 확인</span>
+              <span class="flex items-center gap-1.5 font-medium"><i class="fa-regular fa-hand-pointer text-indigo-500"></i> 터치: 정답 확인 / 좌우 스와이프: 카드 넘김</span>
               <span class="text-[11px] hidden sm:inline">Space(플립), 1/2/3(평가), ←/→(이동)</span>
             </div>
           </div>
@@ -169,14 +164,9 @@
               </div>
               <div id="backText" class="text-sm sm:text-base font-normal text-slate-800 dark:text-slate-100 leading-relaxed break-words whitespace-pre-wrap"></div>
               
-              <!-- Back Image -->
-              <div id="backImgContainer" class="mt-4 hidden" onclick="event.stopPropagation(); zoomImage('backImg')">
-                <div class="relative group inline-block">
-                  <img id="backImg" src="" alt="Back Explanation Slide" class="max-h-56 rounded-xl object-contain bg-slate-100 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 shadow-sm transition group-hover:opacity-90">
-                  <span class="absolute bottom-2 right-2 bg-black/75 text-white text-[10px] px-2 py-0.5 rounded-md backdrop-blur flex items-center gap-1">
-                    <i class="fa-solid fa-magnifying-glass-plus"></i> 뒷면 해설 사진 확대
-                  </span>
-                </div>
+              <!-- Back Multi-Image Gallery -->
+              <div id="backGallery" class="mt-4 hidden" onclick="event.stopPropagation()">
+                <div id="backGalleryGrid" class="grid grid-cols-2 sm:grid-cols-3 gap-2.5"></div>
               </div>
             </div>
             <div class="pt-4 border-t border-slate-200 dark:border-slate-800 flex justify-between items-center text-xs text-slate-400 dark:text-slate-500 mt-4">
@@ -274,8 +264,6 @@
       </div>
 
       <input type="hidden" id="modalDocId">
-      <input type="hidden" id="modalFrontImageBase64">
-      <input type="hidden" id="modalBackImageBase64">
 
       <div>
         <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">피부과학 제7판 챕터 선택 (필수)</label>
@@ -294,25 +282,20 @@
         <textarea id="modalFront" rows="2" onfocus="setActiveInput('front')" placeholder="예: Darier 병과 Hailey-Hailey 병의 원인 유전자 및 결함 단백" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl p-2.5 text-xs text-slate-900 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500"></textarea>
       </div>
 
-      <!-- 앞면 사진 첨부 -->
+      <!-- 앞면 다중 사진 첨부 -->
       <div>
         <div class="flex justify-between items-center mb-1">
           <span class="text-[11px] font-bold text-indigo-600 dark:text-indigo-400 flex items-center gap-1">
-            <i class="fa-solid fa-image"></i> 앞면 사진 (문제 사진 / 슬라이드)
+            <i class="fa-solid fa-images"></i> 앞면 사진 첨부 (여러 장 가능)
           </span>
-          <span class="text-[10px] text-slate-400">앞면 작성 중 캡처 후 Ctrl+V 가능</span>
+          <span class="text-[10px] text-slate-400">파일 다중선택 또는 연속 Ctrl+V</span>
         </div>
         <div id="dropZoneFront" class="border border-dashed border-slate-300 dark:border-slate-700 hover:border-indigo-500 rounded-xl p-3 text-center cursor-pointer bg-slate-50/50 dark:bg-slate-950/50" onclick="document.getElementById('fileInputFront').click()">
-          <input type="file" id="fileInputFront" accept="image/*" class="hidden" onchange="handleFileSelect(event, 'front')">
+          <input type="file" id="fileInputFront" accept="image/*" multiple class="hidden" onchange="handleFileSelect(event, 'front')">
           <div id="promptFront" class="text-xs text-slate-500 dark:text-slate-400">
-            <i class="fa-solid fa-cloud-arrow-up text-sm text-indigo-500 mr-1"></i> 앞면 사진 선택 또는 <b>Ctrl + V</b>
+            <i class="fa-solid fa-cloud-arrow-up text-sm text-indigo-500 mr-1"></i> 사진 추가하기 (클릭하여 선택 또는 <b>Ctrl + V</b>)
           </div>
-          <div id="previewBoxFront" class="hidden relative inline-block mt-1">
-            <img id="previewImgFront" src="" alt="Front Preview" class="max-h-28 rounded-lg border border-slate-300 dark:border-slate-700 shadow-sm object-contain bg-slate-900">
-            <button type="button" onclick="event.stopPropagation(); clearImage('front')" class="absolute -top-2 -right-2 bg-rose-600 hover:bg-rose-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-[10px] shadow" title="삭제">
-              <i class="fa-solid fa-xmark"></i>
-            </button>
-          </div>
+          <div id="previewListFront" class="grid grid-cols-3 sm:grid-cols-4 gap-2 mt-2 hidden" onclick="event.stopPropagation()"></div>
         </div>
       </div>
 
@@ -330,25 +313,20 @@
         <textarea id="modalBack" rows="5" onfocus="setActiveInput('back')" placeholder="예: • Darier: [red]ATP2A2[/red] (**SERCA2** 결함, 광선부위 각화성 구진)&#10;• Hailey-Hailey: [red]ATP2C1[/red] (**SPCA1** 결함, 간찰부 수포/미란)" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl p-2.5 text-xs text-slate-900 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 leading-relaxed"></textarea>
       </div>
 
-      <!-- 뒷면 사진 첨부 -->
+      <!-- 뒷면 다중 사진 첨부 -->
       <div>
         <div class="flex justify-between items-center mb-1">
           <span class="text-[11px] font-bold text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
-            <i class="fa-solid fa-image"></i> 뒷면 사진 (정답 도해 / 병리 해설 슬라이드)
+            <i class="fa-solid fa-images"></i> 뒷면 사진 첨부 (여러 장 가능)
           </span>
-          <span class="text-[10px] text-slate-400">뒷면 작성 중 캡처 후 Ctrl+V 가능</span>
+          <span class="text-[10px] text-slate-400">파일 다중선택 또는 연속 Ctrl+V</span>
         </div>
         <div id="dropZoneBack" class="border border-dashed border-slate-300 dark:border-slate-700 hover:border-emerald-500 rounded-xl p-3 text-center cursor-pointer bg-slate-50/50 dark:bg-slate-950/50" onclick="document.getElementById('fileInputBack').click()">
-          <input type="file" id="fileInputBack" accept="image/*" class="hidden" onchange="handleFileSelect(event, 'back')">
+          <input type="file" id="fileInputBack" accept="image/*" multiple class="hidden" onchange="handleFileSelect(event, 'back')">
           <div id="promptBack" class="text-xs text-slate-500 dark:text-slate-400">
-            <i class="fa-solid fa-cloud-arrow-up text-sm text-emerald-500 mr-1"></i> 뒷면 사진 선택 또는 <b>Ctrl + V</b>
+            <i class="fa-solid fa-cloud-arrow-up text-sm text-emerald-500 mr-1"></i> 사진 추가하기 (클릭하여 선택 또는 <b>Ctrl + V</b>)
           </div>
-          <div id="previewBoxBack" class="hidden relative inline-block mt-1">
-            <img id="previewImgBack" src="" alt="Back Preview" class="max-h-28 rounded-lg border border-slate-300 dark:border-slate-700 shadow-sm object-contain bg-slate-900">
-            <button type="button" onclick="event.stopPropagation(); clearImage('back')" class="absolute -top-2 -right-2 bg-rose-600 hover:bg-rose-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-[10px] shadow" title="삭제">
-              <i class="fa-solid fa-xmark"></i>
-            </button>
-          </div>
+          <div id="previewListBack" class="grid grid-cols-3 sm:grid-cols-4 gap-2 mt-2 hidden" onclick="event.stopPropagation()"></div>
         </div>
       </div>
 
@@ -366,9 +344,9 @@
 
   <!-- IMAGE ZOOM MODAL -->
   <div id="imageModal" class="fixed inset-0 bg-black/90 z-50 hidden flex items-center justify-center p-4" onclick="closeImageZoom()">
-    <div class="relative max-w-4xl max-h-full">
+    <div class="relative max-w-4xl max-h-full" onclick="event.stopPropagation()">
       <img id="zoomedImg" src="" alt="Enlarged view" class="max-h-[85vh] rounded-2xl shadow-2xl object-contain">
-      <button class="absolute -top-10 right-0 text-white text-xl p-2" onclick="closeImageZoom()"><i class="fa-solid fa-xmark"></i> 닫기</button>
+      <button class="absolute -top-10 right-0 text-white text-xl p-2 cursor-pointer hover:opacity-80" onclick="closeImageZoom()"><i class="fa-solid fa-xmark"></i> 닫기</button>
     </div>
   </div>
 
@@ -377,7 +355,7 @@
     // =================================================================
     // [중요] 본인의 Firebase 설정 키를 여기에 그대로 붙여넣으세요!
     // =================================================================
-    const firebaseConfig = {
+      const firebaseConfig = {
       apiKey: "AIzaSyDdWgBFgtd6PvC6DGgTkzcnd1cljjCkxJU",
       authDomain: "dermaboard.firebaseapp.com",
       projectId: "dermaboard",
@@ -426,6 +404,16 @@
     let isShuffled = false;
     let activeTarget = 'front';
 
+    let tempFrontImages = [];
+    let tempBackImages = [];
+
+    // 스와이프 및 클릭 구분 변수
+    let touchStartX = 0;
+    let touchStartY = 0;
+    let touchEndX = 0;
+    let touchEndY = 0;
+    let isSwiping = false;
+
     function setActiveInput(target) {
       activeTarget = target;
     }
@@ -471,7 +459,7 @@
           img.onload = () => {
             let width = img.width;
             let height = img.height;
-            const maxDim = 1000;
+            const maxDim = 800;
 
             if (width > maxDim || height > maxDim) {
               if (width > height) {
@@ -489,7 +477,7 @@
             const ctx = canvas.getContext('2d');
             ctx.drawImage(img, 0, 0, width, height);
 
-            const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.75);
+            const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.68);
             resolve(compressedDataUrl);
           };
           img.onerror = reject;
@@ -499,43 +487,106 @@
     }
 
     async function handleFileSelect(event, side) {
-      const file = event.target.files[0];
-      if (!file) return;
-      processSelectedImageFile(file, side);
+      const files = event.target.files;
+      if (!files || files.length === 0) return;
+      for (let i = 0; i < files.length; i++) {
+        await processSingleFile(files[i], side);
+      }
+      event.target.value = '';
     }
 
-    async function processSelectedImageFile(file, side) {
-      if (!file.type.startsWith('image/')) {
-        alert('이미지 파일만 등록할 수 있습니다.');
-        return;
-      }
+    async function processSingleFile(file, side) {
+      if (!file.type.startsWith('image/')) return;
       try {
         const base64 = await compressImageFile(file);
-        setImagePreview(base64, side);
+        if (side === 'front') {
+          tempFrontImages.push(base64);
+        } else {
+          tempBackImages.push(base64);
+        }
+        renderModalImagePreviews(side);
       } catch (err) {
-        alert('이미지 처리 중 오류가 발생했습니다.');
+        console.error("이미지 처리 실패:", err);
       }
     }
 
-    function setImagePreview(base64, side) {
+    function renderModalImagePreviews(side) {
       const isFront = side === 'front';
       const capSide = isFront ? 'Front' : 'Back';
+      const images = isFront ? tempFrontImages : tempBackImages;
+      const container = document.getElementById(`previewList${capSide}`);
 
-      document.getElementById(`modal${capSide}ImageBase64`).value = base64;
-      document.getElementById(`previewImg${capSide}`).src = base64;
-      document.getElementById(`previewBox${capSide}`).classList.remove('hidden');
-      document.getElementById(`prompt${capSide}`).classList.add('hidden');
+      if (images.length === 0) {
+        container.innerHTML = '';
+        container.classList.add('hidden');
+        return;
+      }
+
+      container.classList.remove('hidden');
+      container.innerHTML = images.map((src, idx) => `
+        <div class="relative group aspect-square rounded-xl overflow-hidden border border-slate-300 dark:border-slate-700 bg-slate-900 flex items-center justify-center">
+          <img src="${src}" class="w-full h-full object-cover">
+          <button type="button" onclick="removeModalImage('${side}', ${idx})" class="absolute top-1 right-1 bg-rose-600 hover:bg-rose-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-[10px] shadow" title="삭제">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+      `).join('');
     }
 
-    function clearImage(side) {
-      const isFront = side === 'front';
-      const capSide = isFront ? 'Front' : 'Back';
+    function removeModalImage(side, index) {
+      if (side === 'front') {
+        tempFrontImages.splice(index, 1);
+      } else {
+        tempBackImages.splice(index, 1);
+      }
+      renderModalImagePreviews(side);
+    }
 
-      document.getElementById(`modal${capSide}ImageBase64`).value = '';
-      document.getElementById(`previewImg${capSide}`).src = '';
-      document.getElementById(`fileInput${capSide}`).value = '';
-      document.getElementById(`previewBox${capSide}`).classList.add('hidden');
-      document.getElementById(`prompt${capSide}`).classList.remove('hidden');
+    // =================================================================
+    // 모바일 터치 스와이프 및 제스처 등록
+    // =================================================================
+    function setupSwipeAndGestures() {
+      const area = document.getElementById('cardTouchArea');
+
+      area.addEventListener('touchstart', (e) => {
+        touchStartX = e.changedTouches[0].screenX;
+        touchStartY = e.changedTouches[0].screenY;
+        isSwiping = false;
+      }, { passive: true });
+
+      area.addEventListener('touchend', (e) => {
+        touchEndX = e.changedTouches[0].screenX;
+        touchEndY = e.changedTouches[0].screenY;
+        handleSwipeGesture();
+      }, { passive: true });
+
+      // 클릭 이벤트 (스와이프가 아니었을 때만 카드 뒤집기)
+      area.addEventListener('click', (e) => {
+        if (isSwiping) {
+          isSwiping = false;
+          return;
+        }
+        flipCard();
+      });
+    }
+
+    function handleSwipeGesture() {
+      const diffX = touchEndX - touchStartX;
+      const diffY = touchEndY - touchStartY;
+      const threshold = 45; // 최소 스와이프 거리
+
+      // 수평 이동 거리가 수직 이동 거리보다 확실히 클 때만 스와이프로 판정
+      if (Math.abs(diffX) >= threshold && Math.abs(diffX) > Math.abs(diffY) * 1.3) {
+        isSwiping = true;
+        if (diffX < 0) {
+          // 좌측으로 스와이프 -> 다음 카드
+          nextCard();
+        } else {
+          // 우측으로 스와이프 -> 이전 카드
+          prevCard();
+        }
+        setTimeout(() => { isSwiping = false; }, 250);
+      }
     }
 
     function setupPasteAndDrop() {
@@ -548,8 +599,7 @@
         for (let i = 0; i < items.length; i++) {
           if (items[i].type.indexOf('image') !== -1) {
             const blob = items[i].getAsFile();
-            processSelectedImageFile(blob, activeTarget);
-            break;
+            await processSingleFile(blob, activeTarget);
           }
         }
       });
@@ -572,11 +622,13 @@
           }, false);
         });
 
-        dropZone.addEventListener('drop', (e) => {
+        dropZone.addEventListener('drop', async (e) => {
           const dt = e.dataTransfer;
           const files = dt.files;
-          if (files.length > 0) {
-            processSelectedImageFile(files[0], side);
+          if (files && files.length > 0) {
+            for (let i = 0; i < files.length; i++) {
+              await processSingleFile(files[i], side);
+            }
           }
         }, false);
       });
@@ -611,6 +663,7 @@
 
       setupKeybindings();
       setupPasteAndDrop();
+      setupSwipeAndGestures();
 
       if (firebaseConfig.apiKey === "YOUR_API_KEY") {
         document.getElementById('syncBadge').innerHTML = `<span class="w-2 h-2 rounded-full bg-rose-500"></span> 키 입력 필요`;
@@ -703,6 +756,20 @@
       }
     }
 
+    function getCardImages(card, side) {
+      if (side === 'front') {
+        if (Array.isArray(card.frontImages) && card.frontImages.length > 0) return card.frontImages;
+        if (card.frontImageBase64) return [card.frontImageBase64];
+        if (card.imageBase64) return [card.imageBase64];
+        if (card.imageUrl) return [card.imageUrl];
+        return [];
+      } else {
+        if (Array.isArray(card.backImages) && card.backImages.length > 0) return card.backImages;
+        if (card.backImageBase64) return [card.backImageBase64];
+        return [];
+      }
+    }
+
     function renderCard() {
       const box = document.getElementById('flashcardBox');
       box.classList.remove('rotate-y-180');
@@ -713,21 +780,19 @@
       const statusBadge = document.getElementById('masteryStatus');
       const progressBar = document.getElementById('deckProgressBar');
 
-      const frontImgCont = document.getElementById('frontImgContainer');
-      const frontImgElem = document.getElementById('frontImg');
-      const backImgCont = document.getElementById('backImgContainer');
-      const backImgElem = document.getElementById('backImg');
+      const frontGallery = document.getElementById('frontGallery');
+      const frontGalleryGrid = document.getElementById('frontGalleryGrid');
+      const backGallery = document.getElementById('backGallery');
+      const backGalleryGrid = document.getElementById('backGalleryGrid');
 
       if (!card) {
         document.getElementById('frontChapter').innerText = "카드 없음";
         document.getElementById('frontYield').innerText = "";
         document.getElementById('frontText').innerText = "해당 조건의 카드가 없습니다.\n상단의 [+ 새 카드 등록]을 눌러 카드를 생성해보세요.";
-        frontImgElem.src = '';
-        frontImgCont.classList.add('hidden');
+        frontGallery.classList.add('hidden');
         document.getElementById('backChapter').innerText = "";
         document.getElementById('backText').innerText = "";
-        backImgElem.src = '';
-        backImgCont.classList.add('hidden');
+        backGallery.classList.add('hidden');
         counter.innerText = "0 / 0";
         statusBadge.className = "hidden";
         progressBar.style.width = "0%";
@@ -738,34 +803,40 @@
       document.getElementById('frontYield').innerText = card.highYield ? "★ High-Yield 기출" : "";
       document.getElementById('frontText').innerHTML = parseCardText(card.front);
 
-      // [핵심 수정] 앞면 사진 결정: frontImageBase64가 명시적으로 정의된 경우(빈 문자열 포함) 그 값을 엄격히 사용!
-      // 과거 구버전 필드(imageBase64, imageUrl)는 frontImageBase64 필드가 아예 없던 최초 카드에서만 예외적으로 참조
-      let frontSrc = '';
-      if (card.frontImageBase64 !== undefined) {
-        frontSrc = card.frontImageBase64 || '';
+      // [핵심] 사진 본체(img)와 돋보기 버튼에만 zoom 이벤트 바인딩. 여백(div)에는 절대 zoom이 걸리지 않음
+      const frontImgs = getCardImages(card, 'front');
+      if (frontImgs.length > 0) {
+        frontGallery.classList.remove('hidden');
+        frontGalleryGrid.innerHTML = frontImgs.map(src => `
+          <div class="relative rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-100/70 dark:bg-slate-950 p-1 flex items-center justify-center shadow-sm">
+            <img src="${src}" class="max-h-36 max-w-full rounded-xl object-contain cursor-zoom-in hover:opacity-90 transition active:scale-95" onclick="event.stopPropagation(); zoomDirectImage('${src}')">
+            <button type="button" class="absolute bottom-1.5 right-1.5 bg-black/75 hover:bg-black text-white text-[10px] px-2 py-0.5 rounded-lg backdrop-blur cursor-pointer" onclick="event.stopPropagation(); zoomDirectImage('${src}')">
+              <i class="fa-solid fa-magnifying-glass-plus"></i>
+            </button>
+          </div>
+        `).join('');
       } else {
-        frontSrc = card.imageBase64 || card.imageUrl || '';
+        frontGallery.classList.add('hidden');
+        frontGalleryGrid.innerHTML = '';
       }
 
-      if (frontSrc.trim() !== '') {
-        frontImgElem.src = frontSrc;
-        frontImgCont.classList.remove('hidden');
-      } else {
-        frontImgElem.src = '';
-        frontImgCont.classList.add('hidden');
-      }
-
-      // 뒷면 텍스트 및 사진 렌더링
       document.getElementById('backChapter').innerText = card.chapter;
       document.getElementById('backText').innerHTML = parseCardText(card.back);
 
-      const backSrc = card.backImageBase64 || '';
-      if (backSrc.trim() !== '') {
-        backImgElem.src = backSrc;
-        backImgCont.classList.remove('hidden');
+      const backImgs = getCardImages(card, 'back');
+      if (backImgs.length > 0) {
+        backGallery.classList.remove('hidden');
+        backGalleryGrid.innerHTML = backImgs.map(src => `
+          <div class="relative rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-100/70 dark:bg-slate-950 p-1 flex items-center justify-center shadow-sm">
+            <img src="${src}" class="max-h-36 max-w-full rounded-xl object-contain cursor-zoom-in hover:opacity-90 transition active:scale-95" onclick="event.stopPropagation(); zoomDirectImage('${src}')">
+            <button type="button" class="absolute bottom-1.5 right-1.5 bg-black/75 hover:bg-black text-white text-[10px] px-2 py-0.5 rounded-lg backdrop-blur cursor-pointer" onclick="event.stopPropagation(); zoomDirectImage('${src}')">
+              <i class="fa-solid fa-magnifying-glass-plus"></i>
+            </button>
+          </div>
+        `).join('');
       } else {
-        backImgElem.src = '';
-        backImgCont.classList.add('hidden');
+        backGallery.classList.add('hidden');
+        backGalleryGrid.innerHTML = '';
       }
 
       counter.innerText = `${currentIndex + 1} / ${activeDeck.length}`;
@@ -891,13 +962,8 @@
       }
 
       listContainer.innerHTML = cards.map(c => {
-        let frontSrc = '';
-        if (c.frontImageBase64 !== undefined) {
-          frontSrc = c.frontImageBase64 || '';
-        } else {
-          frontSrc = c.imageBase64 || c.imageUrl || '';
-        }
-        const backSrc = c.backImageBase64 || '';
+        const frontImgs = getCardImages(c, 'front');
+        const backImgs = getCardImages(c, 'back');
 
         return `
         <div class="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 space-y-2 shadow-sm">
@@ -912,18 +978,11 @@
           <div class="text-sm font-bold text-slate-900 dark:text-white leading-snug">${parseCardText(c.front)}</div>
           <div class="text-xs text-slate-700 dark:text-slate-300 bg-slate-50 dark:bg-slate-950 p-3 rounded-xl whitespace-pre-wrap leading-relaxed border border-slate-100 dark:border-slate-800/80">${parseCardText(c.back)}</div>
           
-          <div class="flex gap-3 pt-1">
-            ${frontSrc ? `
-              <div class="space-y-0.5">
-                <span class="text-[10px] text-slate-400">앞면 사진</span>
-                <img src="${frontSrc}" alt="Front" class="h-16 rounded-lg object-contain border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-950">
-              </div>` : ''}
-            ${backSrc ? `
-              <div class="space-y-0.5">
-                <span class="text-[10px] text-slate-400">뒷면 사진</span>
-                <img src="${backSrc}" alt="Back" class="h-16 rounded-lg object-contain border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-950">
-              </div>` : ''}
-          </div>
+          ${(frontImgs.length > 0 || backImgs.length > 0) ? `
+            <div class="flex flex-wrap gap-2 pt-1">
+              ${frontImgs.map(s => `<img src="${s}" class="h-14 rounded-lg object-contain border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-950 cursor-pointer" onclick="zoomDirectImage('${s}')">`).join('')}
+              ${backImgs.map(s => `<img src="${s}" class="h-14 rounded-lg object-contain border border-emerald-500/50 bg-slate-100 dark:bg-slate-950 cursor-pointer" onclick="zoomDirectImage('${s}')">`).join('')}
+            </div>` : ''}
         </div>
       `}).join('');
     }
@@ -935,8 +994,10 @@
         document.getElementById('modalFront').value = '';
         document.getElementById('modalBack').value = '';
         document.getElementById('modalHighYield').checked = false;
-        clearImage('front');
-        clearImage('back');
+        tempFrontImages = [];
+        tempBackImages = [];
+        renderModalImagePreviews('front');
+        renderModalImagePreviews('back');
         activeTarget = 'front';
         modal.classList.remove('hidden');
       } else {
@@ -954,26 +1015,11 @@
       document.getElementById('modalBack').value = card.back;
       document.getElementById('modalHighYield').checked = !!card.highYield;
 
-      // 앞면 사진 세팅 (엄격 검증)
-      let frontImg = '';
-      if (card.frontImageBase64 !== undefined) {
-        frontImg = card.frontImageBase64 || '';
-      } else {
-        frontImg = card.imageBase64 || card.imageUrl || '';
-      }
+      tempFrontImages = [...getCardImages(card, 'front')];
+      tempBackImages = [...getCardImages(card, 'back')];
 
-      if (frontImg && frontImg.trim() !== '') {
-        setImagePreview(frontImg, 'front');
-      } else {
-        clearImage('front');
-      }
-
-      // 뒷면 사진 세팅
-      if (card.backImageBase64 && card.backImageBase64.trim() !== '') {
-        setImagePreview(card.backImageBase64, 'back');
-      } else {
-        clearImage('back');
-      }
+      renderModalImagePreviews('front');
+      renderModalImagePreviews('back');
 
       document.getElementById('cardModal').classList.remove('hidden');
     }
@@ -988,8 +1034,6 @@
       const chapter = document.getElementById('modalChapter').value;
       const front = document.getElementById('modalFront').value.trim();
       const back = document.getElementById('modalBack').value.trim();
-      const frontImageBase64 = document.getElementById('modalFrontImageBase64').value;
-      const backImageBase64 = document.getElementById('modalBackImageBase64').value;
       const highYield = document.getElementById('modalHighYield').checked;
 
       if (!front || !back) {
@@ -997,13 +1041,14 @@
         return;
       }
 
-      // [핵심 수정] imageBase64와 imageUrl을 명시적으로 '' 처리하여 구버전 데이터가 남지 않도록 박멸!
       const cardData = {
         chapter,
         front,
         back,
-        frontImageBase64: frontImageBase64 || '',
-        backImageBase64: backImageBase64 || '',
+        frontImages: tempFrontImages,
+        backImages: tempBackImages,
+        frontImageBase64: '',
+        backImageBase64: '',
         imageBase64: '',
         imageUrl: '',
         highYield,
@@ -1035,8 +1080,7 @@
       }
     }
 
-    function zoomImage(imgElementId) {
-      const src = document.getElementById(imgElementId).src;
+    function zoomDirectImage(src) {
       if (!src) return;
       document.getElementById('zoomedImg').src = src;
       document.getElementById('imageModal').classList.remove('hidden');
