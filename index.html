@@ -26,7 +26,7 @@
   </script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   
-  <!-- Firebase SDK (v10 Compat) -->
+  <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 
@@ -62,9 +62,10 @@
       </div>
 
       <div class="flex items-center gap-2">
+        <!-- AI Assistant Button -->
         <button onclick="toggleAiDrawer(true)" class="px-2.5 py-1.5 rounded-xl bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white text-xs font-bold flex items-center gap-1.5 shadow-md shadow-indigo-500/20 transition active:scale-95" title="구글 AI 피부과 튜터 열기">
           <i class="fa-solid fa-wand-magic-sparkles text-amber-300"></i>
-          <span class="hidden sm:inline">AI 튜터 (Gemini 3)</span>
+          <span class="hidden sm:inline">AI 튜터</span>
         </button>
 
         <div id="syncBadge" class="text-xs px-2.5 py-1 rounded-full bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-300 flex items-center gap-1.5 font-medium border border-slate-300/60 dark:border-slate-700">
@@ -82,23 +83,26 @@
 
   <!-- NAVIGATION & ACTION BAR -->
   <div class="max-w-5xl w-full mx-auto px-4 mt-4 flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-2.5">
-    <nav class="flex bg-slate-200/80 dark:bg-slate-900 p-1 rounded-xl border border-slate-300/70 dark:border-slate-800 self-start sm:self-auto w-full sm:w-auto">
-      <button id="navStudy" onclick="setTab('study')" class="flex-1 sm:flex-initial px-3.5 py-1.5 text-xs sm:text-sm font-bold rounded-lg bg-white dark:bg-indigo-600 text-indigo-700 dark:text-white shadow-sm transition flex items-center justify-center gap-2">
-        <i class="fa-solid fa-layer-group"></i> <span>암기 테스트</span>
+    <nav class="flex bg-slate-200/80 dark:bg-slate-900 p-1 rounded-xl border border-slate-300/70 dark:border-slate-800 self-start sm:self-auto w-full sm:w-auto overflow-x-auto">
+      <button id="navStudy" onclick="setTab('study')" class="whitespace-nowrap flex-1 sm:flex-initial px-3.5 py-1.5 text-xs sm:text-sm font-bold rounded-lg bg-white dark:bg-indigo-600 text-indigo-700 dark:text-white shadow-sm transition flex items-center justify-center gap-1.5">
+        <i class="fa-solid fa-layer-group"></i> <span>암기 카드</span>
       </button>
-      <button id="navStats" onclick="setTab('stats')" class="flex-1 sm:flex-initial px-3.5 py-1.5 text-xs sm:text-sm font-semibold rounded-lg text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition flex items-center justify-center gap-2">
+
+      <!-- ★ 독립된 5지선다 모의고사 페이지(quiz.html) 이동 버튼 -->
+      <a href="quiz.html" class="whitespace-nowrap flex-1 sm:flex-initial px-3.5 py-1.5 text-xs sm:text-sm font-semibold rounded-lg text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition flex items-center justify-center gap-1.5">
+        <i class="fa-solid fa-square-check text-emerald-500"></i> <span>5지선다 모의고사</span>
+      </a>
+
+      <button id="navStats" onclick="setTab('stats')" class="whitespace-nowrap flex-1 sm:flex-initial px-3.5 py-1.5 text-xs sm:text-sm font-semibold rounded-lg text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition flex items-center justify-center gap-1.5">
         <i class="fa-solid fa-chart-pie"></i> <span>진도율</span>
       </button>
-      <button id="navList" onclick="setTab('list')" class="flex-1 sm:flex-initial px-3.5 py-1.5 text-xs sm:text-sm font-semibold rounded-lg text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition flex items-center justify-center gap-2">
+      <button id="navList" onclick="setTab('list')" class="whitespace-nowrap flex-1 sm:flex-initial px-3.5 py-1.5 text-xs sm:text-sm font-semibold rounded-lg text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition flex items-center justify-center gap-1.5">
         <i class="fa-solid fa-table-list"></i> <span>카드 목록</span>
       </button>
     </nav>
 
     <div class="flex items-center gap-2">
-      <button onclick="toggleAiDrawer(true)" class="sm:hidden flex-1 px-3.5 py-2 rounded-xl bg-violet-600 text-white text-xs font-bold flex items-center justify-center gap-1.5 shadow">
-        <i class="fa-solid fa-wand-magic-sparkles text-amber-300"></i> AI 튜터
-      </button>
-      <button onclick="toggleAddModal(true)" class="flex-1 sm:flex-initial px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs sm:text-sm font-bold flex items-center justify-center gap-2 transition shadow-md shadow-indigo-600/20 active:scale-95">
+      <button onclick="toggleAddModal(true)" class="w-full sm:w-auto px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs sm:text-sm font-bold flex items-center justify-center gap-2 transition shadow-md shadow-indigo-600/20 active:scale-95">
         <i class="fa-solid fa-plus"></i> <span>새 카드 등록</span>
       </button>
     </div>
@@ -107,7 +111,7 @@
   <!-- MAIN VIEW -->
   <main class="max-w-5xl w-full mx-auto px-4 py-4 flex-1">
 
-    <!-- TAB 1: STUDY -->
+    <!-- ==================== TAB 1: STUDY FLASHCARD ==================== -->
     <div id="tabContentStudy" class="space-y-4">
       <div class="grid grid-cols-1 sm:grid-cols-12 gap-2 bg-white dark:bg-slate-900 p-3 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
         <div class="sm:col-span-5">
@@ -142,9 +146,9 @@
             <div>
               <div class="flex justify-between items-start gap-2 mb-3">
                 <span id="frontChapter" class="text-xs font-bold px-3 py-1 rounded-full bg-indigo-50 dark:bg-indigo-950/80 text-indigo-700 dark:text-indigo-300 border border-indigo-100 dark:border-indigo-800/60"></span>
-                <div class="flex items-center gap-2">
+                <div class="flex items-center gap-1.5">
                   <button type="button" onclick="event.stopPropagation(); askAiAboutCurrentCard()" class="text-xs font-bold px-2.5 py-1 rounded-full bg-violet-100 dark:bg-violet-950/80 text-violet-700 dark:text-violet-300 border border-violet-200 dark:border-violet-800 hover:opacity-80 flex items-center gap-1 transition">
-                    <i class="fa-solid fa-wand-magic-sparkles text-amber-500"></i> AI 심층 질의
+                    <i class="fa-solid fa-wand-magic-sparkles text-amber-500"></i> AI 질의
                   </button>
                   <span id="frontYield" class="text-xs font-bold px-2.5 py-1 rounded-full bg-amber-100 dark:bg-amber-500/10 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-500/20"></span>
                 </div>
@@ -154,7 +158,6 @@
               </div>
               <h2 id="frontText" class="text-base sm:text-xl font-bold text-slate-900 dark:text-white leading-relaxed break-words whitespace-pre-wrap"></h2>
               
-              <!-- Front Multi-Image Gallery -->
               <div id="frontGallery" class="mt-4 hidden" onclick="event.stopPropagation()">
                 <div id="frontGalleryGrid" class="grid grid-cols-2 sm:grid-cols-3 gap-2.5"></div>
               </div>
@@ -179,7 +182,6 @@
               </div>
               <div id="backText" class="text-sm sm:text-base font-normal text-slate-800 dark:text-slate-100 leading-relaxed break-words whitespace-pre-wrap"></div>
               
-              <!-- Back Multi-Image Gallery -->
               <div id="backGallery" class="mt-4 hidden" onclick="event.stopPropagation()">
                 <div id="backGalleryGrid" class="grid grid-cols-2 sm:grid-cols-3 gap-2.5"></div>
               </div>
@@ -224,7 +226,7 @@
       </div>
     </div>
 
-    <!-- TAB 2: STATS -->
+    <!-- ==================== TAB 2: PROGRESS STATS ==================== -->
     <div id="tabContentStats" class="hidden space-y-4">
       <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
         <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-4 rounded-2xl shadow-sm">
@@ -256,7 +258,7 @@
       </div>
     </div>
 
-    <!-- TAB 3: LIST -->
+    <!-- ==================== TAB 3: CARD LIST ==================== -->
     <div id="tabContentList" class="hidden space-y-3">
       <div class="flex justify-between items-center text-xs text-slate-500 dark:text-slate-400 px-1">
         <span id="listTotalCount">불러오는 중...</span>
@@ -271,7 +273,6 @@
   <div id="aiDrawerBackdrop" class="fixed inset-0 bg-slate-950/60 backdrop-blur-sm z-50 hidden transition-opacity" onclick="toggleAiDrawer(false)"></div>
   <aside id="aiDrawer" class="fixed top-0 right-0 h-full w-full sm:w-[460px] bg-white dark:bg-slate-900 border-l border-slate-200 dark:border-slate-800 shadow-2xl z-50 transform translate-x-full transition-transform duration-300 ease-out flex flex-col">
     
-    <!-- Drawer Header -->
     <div class="p-4 border-b border-slate-200 dark:border-slate-800 flex justify-between items-center bg-slate-50 dark:bg-slate-950">
       <div class="flex items-center gap-2.5">
         <div class="w-8 h-8 rounded-xl bg-gradient-to-tr from-violet-600 to-indigo-600 flex items-center justify-center text-white text-sm shadow">
@@ -295,18 +296,15 @@
       </div>
     </div>
 
-    <!-- Drawer Chat Messages Area -->
     <div id="aiChatBox" class="flex-1 p-4 overflow-y-auto space-y-3 text-xs leading-relaxed">
       <div class="bg-indigo-50 dark:bg-indigo-950/60 p-3.5 rounded-2xl border border-indigo-100 dark:border-indigo-900/60 text-slate-700 dark:text-indigo-200 space-y-1.5">
         <p class="font-bold text-indigo-900 dark:text-indigo-100 flex items-center gap-1.5">
           <i class="fa-solid fa-robot text-indigo-500"></i> 피부과 전문의 시험 AI 튜터입니다.
         </p>
         <p>대한피부과학회 교과서 《피부과학 제7판》 기준 질환의 임상상, 조직병리학적 특징, 표적 항원, 감별진단을 정리해 드립니다.</p>
-        <p class="text-[11px] text-slate-500 dark:text-indigo-300">💡 <b>팁:</b> 아래 추천 질문을 누르거나, 시험에 헷갈리는 질환 감별점을 편하게 물어보세요!</p>
       </div>
     </div>
 
-    <!-- Quick Prompts Toolbar -->
     <div class="px-4 py-2 border-t border-slate-100 dark:border-slate-800/80 bg-slate-50/50 dark:bg-slate-950/50 flex gap-1.5 overflow-x-auto text-[11px]">
       <button onclick="sendQuickPrompt('현재 카드의 병리 소견과 핵심 감별 포인트를 7판 기준으로 일목요연하게 정리해줘')" class="whitespace-nowrap px-2.5 py-1 rounded-full bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 text-slate-700 dark:text-slate-300 font-medium">
         📋 이 카드 심층 분석
@@ -316,7 +314,6 @@
       </button>
     </div>
 
-    <!-- Drawer Input Area -->
     <div class="p-3 border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
       <form onsubmit="handleAiSubmit(event)" class="flex gap-2">
         <input type="text" id="aiInput" placeholder="질환명, 조직병리, 면역형광검사 등 질문 입력..." class="flex-1 bg-slate-100 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500">
@@ -359,7 +356,7 @@
     </div>
   </div>
 
-  <!-- ==================== ADD / EDIT MODAL ==================== -->
+  <!-- ADD / EDIT MODAL -->
   <div id="cardModal" class="fixed inset-0 bg-slate-950/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
     <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl max-w-xl w-full p-6 shadow-2xl space-y-4 max-h-[92vh] overflow-y-auto">
       
@@ -377,7 +374,6 @@
         <select id="modalChapter" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl p-2.5 text-xs text-slate-900 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500"></select>
       </div>
 
-      <!-- 1. 앞면 (문제/기출포인트) -->
       <div>
         <div class="flex justify-between items-center mb-1">
           <label class="text-xs font-bold text-slate-700 dark:text-slate-300">앞면 (문제 / 질환명 / 기출 포인트)</label>
@@ -389,7 +385,6 @@
         <textarea id="modalFront" rows="2" onfocus="setActiveInput('front')" placeholder="예: Darier 병과 Hailey-Hailey 병의 원인 유전자 및 결함 단백" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl p-2.5 text-xs text-slate-900 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500"></textarea>
       </div>
 
-      <!-- 앞면 다중 사진 첨부 -->
       <div>
         <div class="flex justify-between items-center mb-1">
           <span class="text-[11px] font-bold text-indigo-600 dark:text-indigo-400 flex items-center gap-1">
@@ -406,7 +401,6 @@
         </div>
       </div>
 
-      <!-- 2. 뒷면 (정답 및 요약) -->
       <div>
         <div class="flex justify-between items-center mb-1">
           <label class="text-xs font-bold text-slate-700 dark:text-slate-300">뒷면 (정답 및 핵심 암기 요약)</label>
@@ -420,7 +414,6 @@
         <textarea id="modalBack" rows="5" onfocus="setActiveInput('back')" placeholder="예: • Darier: [red]ATP2A2[/red] (**SERCA2** 결함, 광선부위 각화성 구진)&#10;• Hailey-Hailey: [red]ATP2C1[/red] (**SPCA1** 결함, 간찰부 수포/미란)" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl p-2.5 text-xs text-slate-900 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 leading-relaxed"></textarea>
       </div>
 
-      <!-- 뒷면 다중 사진 첨부 -->
       <div>
         <div class="flex justify-between items-center mb-1">
           <span class="text-[11px] font-bold text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
@@ -462,7 +455,7 @@
     // =================================================================
     // [중요] 본인의 Firebase 설정 키를 여기에 그대로 붙여넣으세요!
     // =================================================================
-  const firebaseConfig = {
+      const firebaseConfig = {
       apiKey: "AIzaSyDdWgBFgtd6PvC6DGgTkzcnd1cljjCkxJU",
       authDomain: "dermaboard.firebaseapp.com",
       projectId: "dermaboard",
@@ -471,36 +464,16 @@
       appId: "1:792660371429:web:2a275b2482648fe52fb10c"
     };
 
-    // 대한피부과학회 제7판 공식 28개 챕터
     const CHAPTERS = [
-      "CHAPTER 01 피부의 구조와 기능",
-      "CHAPTER 02 피부조직병리학",
-      "CHAPTER 03 피부의 증상, 징후와 진단",
-      "CHAPTER 04 피부 면역학",
-      "CHAPTER 05 가려움증",
-      "CHAPTER 06 유전피부질환",
-      "CHAPTER 07 광의학",
-      "CHAPTER 08 물리적 피부질환과 스포츠피부질환",
-      "CHAPTER 09 습진",
-      "CHAPTER 10 직업피부질환",
-      "CHAPTER 11 약물발진, 홍반 및 두드러기",
-      "CHAPTER 12 구진인설질환",
-      "CHAPTER 13 수포질환",
-      "CHAPTER 14 감염피부질환",
-      "CHAPTER 15 피부부속기질환",
-      "CHAPTER 16 색소이상증",
-      "CHAPTER 17 피부혈관질환",
-      "CHAPTER 18 결합조직질환",
-      "CHAPTER 19 피하지방질환",
-      "CHAPTER 20 점막질환",
-      "CHAPTER 21 임신피부질환",
-      "CHAPTER 22 신생아피부질환",
-      "CHAPTER 23 피부노화",
-      "CHAPTER 24 결핍 질환, 대사이상, 포르피린증",
-      "CHAPTER 25 내분비질환, 피부점액증, 손발바닥각질피부증, 진피결합조직질환",
-      "CHAPTER 26 모반과 종양",
-      "CHAPTER 27 피부질환의 치료",
-      "CHAPTER 28 피부미용학"
+      "CHAPTER 01 피부의 구조와 기능", "CHAPTER 02 피부조직병리학", "CHAPTER 03 피부의 증상, 징후와 진단",
+      "CHAPTER 04 피부 면역학", "CHAPTER 05 가려움증", "CHAPTER 06 유전피부질환", "CHAPTER 07 광의학",
+      "CHAPTER 08 물리적 피부질환과 스포츠피부질환", "CHAPTER 09 습진", "CHAPTER 10 직업피부질환",
+      "CHAPTER 11 약물발진, 홍반 및 두드러기", "CHAPTER 12 구진인설질환", "CHAPTER 13 수포질환",
+      "CHAPTER 14 감염피부질환", "CHAPTER 15 피부부속기질환", "CHAPTER 16 색소이상증", "CHAPTER 17 피부혈관질환",
+      "CHAPTER 18 결합조직질환", "CHAPTER 19 피하지방질환", "CHAPTER 20 점막질환", "CHAPTER 21 임신피부질환",
+      "CHAPTER 22 신생아피부질환", "CHAPTER 23 피부노화", "CHAPTER 24 결핍 질환, 대사이상, 포르피린증",
+      "CHAPTER 25 내분비질환, 피부점액증, 손발바닥각질피부증, 진피결합조직질환", "CHAPTER 26 모반과 종양",
+      "CHAPTER 27 피부질환의 치료", "CHAPTER 28 피부미용학"
     ];
 
     let db = null;
@@ -548,12 +521,10 @@
     function parseCardText(rawText) {
       if (!rawText) return '';
       let s = escapeHtml(rawText);
-
       s = s.replace(/\*\*(.*?)\*\*/g, '<strong class="font-extrabold text-indigo-900 dark:text-indigo-200 underline decoration-indigo-300 dark:decoration-indigo-700 underline-offset-2">$1</strong>');
       s = s.replace(/\[red\](.*?)\[\/red\]/gi, '<span class="text-rose-600 dark:text-rose-400 font-extrabold">$1</span>');
       s = s.replace(/\[mark\](.*?)\[\/mark\]/gi, '<mark class="bg-amber-200 dark:bg-amber-900/60 text-amber-950 dark:text-amber-100 px-1 py-0.5 rounded font-bold">$1</mark>');
       s = s.replace(/\[blue\](.*?)\[\/blue\]/gi, '<span class="text-sky-600 dark:text-sky-400 font-extrabold">$1</span>');
-
       return s;
     }
 
@@ -766,6 +737,7 @@
 
       const filterSelect = document.getElementById('filterChapter');
       const modalSelect = document.getElementById('modalChapter');
+
       CHAPTERS.forEach(ch => {
         filterSelect.innerHTML += `<option value="${ch}">${ch}</option>`;
         modalSelect.innerHTML += `<option value="${ch}">${ch}</option>`;
@@ -808,11 +780,11 @@
     function setTab(tab) {
       ['Study', 'Stats', 'List'].forEach(t => {
         document.getElementById(`tabContent${t}`).classList.add('hidden');
-        document.getElementById(`nav${t}`).className = "flex-1 sm:flex-initial px-3.5 py-1.5 text-xs sm:text-sm font-semibold rounded-lg text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition flex items-center justify-center gap-2";
+        document.getElementById(`nav${t}`).className = "whitespace-nowrap flex-1 sm:flex-initial px-3.5 py-1.5 text-xs sm:text-sm font-semibold rounded-lg text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition flex items-center justify-center gap-1.5";
       });
 
       document.getElementById(`tabContent${tab.charAt(0).toUpperCase() + tab.slice(1)}`).classList.remove('hidden');
-      document.getElementById(`nav${tab.charAt(0).toUpperCase() + tab.slice(1)}`).className = "flex-1 sm:flex-initial px-3.5 py-1.5 text-xs sm:text-sm font-bold rounded-lg bg-white dark:bg-indigo-600 text-indigo-700 dark:text-white shadow-sm transition flex items-center justify-center gap-2";
+      document.getElementById(`nav${tab.charAt(0).toUpperCase() + tab.slice(1)}`).className = "whitespace-nowrap flex-1 sm:flex-initial px-3.5 py-1.5 text-xs sm:text-sm font-bold rounded-lg bg-white dark:bg-indigo-600 text-indigo-700 dark:text-white shadow-sm transition flex items-center justify-center gap-1.5";
 
       if (tab === 'stats') updateStats();
       if (tab === 'list') renderFullList();
@@ -1099,7 +1071,7 @@
     }
 
     // =================================================================
-    // AI 챗봇 (최상위 무료 모델 Gemini 3 Flash + 3단계 무중단 Fallback)
+    // AI 챗봇
     // =================================================================
     function toggleAiDrawer(show) {
       const drawer = document.getElementById('aiDrawer');
@@ -1174,7 +1146,6 @@
       }
 
       const chatBox = document.getElementById('aiChatBox');
-
       chatBox.innerHTML += `
         <div class="flex justify-end">
           <div class="bg-indigo-600 text-white p-3 rounded-2xl max-w-[85%] font-medium">
@@ -1188,7 +1159,7 @@
         <div id="${loadingId}" class="flex justify-start">
           <div class="bg-slate-100 dark:bg-slate-800 p-3 rounded-2xl max-w-[85%] text-slate-500 dark:text-slate-400 flex items-center gap-2">
             <i class="fa-solid fa-circle-notch fa-spin text-indigo-500"></i>
-            <span>Gemini 3 Flash가 교과서 내용을 심층 분석 중입니다...</span>
+            <span>Gemini AI가 교과서 내용을 분석 중입니다...</span>
           </div>
         </div>
       `;
@@ -1199,13 +1170,7 @@
         parts: [{ text: userMessage }]
       });
 
-      // [핵심] 무료 티어 최상위 모델 순차 시도 (1순위: Gemini 3 Flash -> 2순위: 3.5 Flash -> 3순위: 3.1 Flash-Lite)
-      const candidateModels = [
-        "gemini-3-flash-preview",
-        "gemini-3.5-flash",
-        "gemini-3.1-flash-lite"
-      ];
-
+      const candidateModels = ["gemini-3-flash-preview", "gemini-3.5-flash", "gemini-3.1-flash-lite"];
       let successData = null;
       let lastErrorMsg = '';
 
@@ -1225,17 +1190,15 @@
           const data = await response.json();
           if (data.error) {
             lastErrorMsg = data.error.message || 'API 오류';
-            console.warn(`[${modelName}] 실패, 다음 무료 모델로 시도:`, data.error);
             continue;
           }
 
           if (data.candidates?.[0]?.content) {
             successData = data;
-            break; // 성공 시 즉시 루프 탈출
+            break;
           }
         } catch (err) {
           lastErrorMsg = err.message;
-          console.warn(`[${modelName}] 네트워크 실패:`, err);
         }
       }
 
