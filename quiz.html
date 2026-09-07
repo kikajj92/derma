@@ -59,14 +59,14 @@
   <!-- MAIN CONTAINER -->
   <main class="max-w-4xl w-full mx-auto px-4 py-6 flex-1 space-y-5">
     
-    <!-- 출제 패널 -->
+    <!-- 출제 세팅 패널 -->
     <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-5 sm:p-6 rounded-3xl shadow-sm space-y-4">
       <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 pb-3 border-b border-slate-100 dark:border-slate-800">
         <div>
           <h2 class="text-sm sm:text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
-            <i class="fa-solid fa-stethoscope text-emerald-500"></i> 임상 증례(CME) 출제 설정
+            <i class="fa-solid fa-stethoscope text-emerald-500"></i> 임상 증례(Clinical Vignette) 출제 세팅
           </h2>
-          <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">내 카드노트와 첨부 사진을 종합 분석하여 5지선다 문제를 출제합니다.</p>
+          <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">내 카드노트의 지식을 환자 나이, 병력, 진찰, 병리 소견 중심의 실전 증례 문제로 재구성합니다.</p>
         </div>
         <div id="dbCardCountBadge" class="text-xs px-2.5 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-semibold border border-slate-200 dark:border-slate-700">
           카드 불러오는 중...
@@ -75,36 +75,37 @@
 
       <div class="grid grid-cols-1 sm:grid-cols-12 gap-3">
         <div class="sm:col-span-6">
-          <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">교과서 챕터 선택</label>
+          <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">교과서 챕터 범위</label>
           <select id="quizChapterSelect" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500">
-            <option value="ALL">전체 챕터 무작위 출제</option>
+            <option value="ALL">전체 챕터 무작위 증례 출제</option>
           </select>
         </div>
 
         <div class="sm:col-span-3">
-          <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">문항 수 선택</label>
+          <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">출제 문항 수</label>
           <select id="quizCountSelect" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 font-semibold">
-            <option value="5" selected>5 문항 (빠른 테스트)</option>
-            <option value="10">10 문항 (실전 집중)</option>
-            <option value="15">15 문항 (하프 모의고사)</option>
+            <option value="5" selected>5 문항 (증례 퀵 테스트)</option>
+            <option value="10">10 문항 (실전 CME 집중)</option>
+            <option value="15">15 문항 (전문의 1차 하프)</option>
           </select>
         </div>
 
         <div class="sm:col-span-3 flex items-end">
           <button onclick="startAiQuiz()" id="btnGenerateQuiz" class="w-full py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold flex items-center justify-center gap-2 shadow-lg shadow-emerald-600/20 transition active:scale-95">
             <i class="fa-solid fa-wand-magic-sparkles text-amber-300"></i>
-            <span>모의고사 시작</span>
+            <span>증례 모의고사 시작</span>
           </button>
         </div>
       </div>
 
+      <!-- 진행 바 -->
       <div id="quizProgressHeader" class="hidden flex justify-between items-center text-xs font-semibold pt-2 border-t border-slate-100 dark:border-slate-800">
         <span id="quizIndexText" class="text-slate-600 dark:text-slate-400 font-bold">문항 1 / 5</span>
         <span id="quizScoreText" class="text-emerald-600 dark:text-emerald-400 font-bold">현재 맞힌 개수: 0</span>
       </div>
     </div>
 
-    <!-- 문항 카드 영역 -->
+    <!-- 문제 풀이 영역 -->
     <div id="quizQuestionCard" class="hidden bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-6 sm:p-8 rounded-3xl shadow-lg space-y-6">
       <div>
         <div class="flex items-center gap-2 mb-2">
@@ -117,21 +118,23 @@
           </span>
         </div>
 
-        <div class="mt-3 p-4 rounded-2xl bg-slate-50 dark:bg-slate-950/80 border border-slate-200 dark:border-slate-800/80 text-xs sm:text-sm text-slate-800 dark:text-slate-200 leading-relaxed whitespace-pre-wrap" id="quizCaseVignette"></div>
+        <!-- 환자 증례 박스 -->
+        <div class="mt-3 p-4 rounded-2xl bg-slate-50 dark:bg-slate-950/80 border border-slate-200 dark:border-slate-800/80 text-xs sm:text-sm text-slate-800 dark:text-slate-200 leading-relaxed font-serif whitespace-pre-wrap" id="quizCaseVignette"></div>
 
+        <!-- 핵심 질문 -->
         <h3 id="quizQuestionTitle" class="text-sm sm:text-base font-bold text-slate-900 dark:text-white mt-4 leading-snug"></h3>
 
         <!-- 사진 갤러리 -->
         <div id="quizImageGallery" class="hidden mt-4 grid grid-cols-2 sm:grid-cols-3 gap-2.5 p-2 rounded-2xl bg-slate-100 dark:bg-slate-950 border border-slate-200 dark:border-slate-800"></div>
       </div>
 
-      <!-- 보기 리스트 (① ~ ⑤) -->
+      <!-- 5개 보기 버튼 -->
       <div id="quizChoiceList" class="space-y-3"></div>
 
       <!-- 정답 해설 -->
       <div id="quizExplanationBox" class="hidden p-4 rounded-2xl bg-emerald-50/70 dark:bg-emerald-950/40 border border-emerald-100 dark:border-emerald-900/60 space-y-2">
         <div class="flex items-center gap-1.5 text-xs font-bold text-emerald-700 dark:text-emerald-300">
-          <i class="fa-solid fa-book-open"></i> 피부과학 제7판 기준 정답 해설
+          <i class="fa-solid fa-book-open"></i> 피부과학 제7판 기준 정답 해설 및 증례 고찰
         </div>
         <p id="quizExplanationContent" class="text-xs text-slate-700 dark:text-slate-200 leading-relaxed whitespace-pre-wrap"></p>
       </div>
@@ -143,18 +146,18 @@
       </div>
     </div>
 
-    <!-- 빈 상태 안내 -->
+    <!-- 초기 안내 박스 -->
     <div id="quizPlaceholder" class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-12 rounded-3xl text-center space-y-3">
       <div class="w-12 h-12 rounded-2xl bg-emerald-50 dark:bg-emerald-950 text-emerald-600 dark:text-emerald-400 mx-auto flex items-center justify-center text-xl">
         <i class="fa-solid fa-user-doctor"></i>
       </div>
-      <h4 class="text-sm font-bold text-slate-900 dark:text-white">모의고사를 출제할 준비가 되었습니다.</h4>
-      <p class="text-xs text-slate-500 dark:text-slate-400 max-w-sm mx-auto">챕터와 문제 수를 고른 후 <b>[모의고사 시작]</b> 버튼을 누르면 환자 나이, 병력, 소견이 담긴 실전 5지선다 문항이 생성됩니다.</p>
+      <h4 class="text-sm font-bold text-slate-900 dark:text-white">실전 증례형 모의고사를 시작할 수 있습니다.</h4>
+      <p class="text-xs text-slate-500 dark:text-slate-400 max-w-sm mx-auto">전문의 1차 시험 및 CME 유형에 맞춰, 나이/병력/이학적 소견/조직 소견이 종합된 고난도 임상 증례 5지선다 문항을 출제합니다.</p>
     </div>
 
   </main>
 
-  <!-- IMAGE ZOOM MODAL -->
+  <!-- 사진 확대 모달 -->
   <div id="imageModal" class="fixed inset-0 bg-black/90 z-50 hidden flex items-center justify-center p-4" onclick="closeImageZoom()">
     <div class="relative max-w-4xl max-h-full" onclick="event.stopPropagation()">
       <img id="zoomedImg" src="" alt="Enlarged view" class="max-h-[85vh] rounded-2xl shadow-2xl object-contain">
@@ -164,7 +167,7 @@
 
   <script>
     // ==========================================
-    // 본인의 Firebase Config 키를 입력하세요
+    // [필수] 본인의 Firebase Config 키 6줄을 입력하세요
     // ==========================================
   const firebaseConfig = {
       apiKey: "AIzaSyDdWgBFgtd6PvC6DGgTkzcnd1cljjCkxJU",
@@ -339,7 +342,7 @@ ${sampleContext}
         alert("문제 출제 실패: " + err.message);
       } finally {
         btn.disabled = false;
-        btn.innerHTML = `<i class="fa-solid fa-wand-magic-sparkles text-amber-300"></i> <span>모의고사 시작</span>`;
+        btn.innerHTML = `<i class="fa-solid fa-wand-magic-sparkles text-amber-300"></i> <span>증례 모의고사 시작</span>`;
       }
     }
 
