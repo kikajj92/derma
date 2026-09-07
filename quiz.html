@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="ko" class="dark" id="htmlRoot">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>피부과학 제7판 5지선다 실전 모의고사</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: { 500: '#6366f1', 600: '#4f46e5', 700: '#4338ca' }
+          }
+        }
+      }
+    }
+  </script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+
+  <style>
+    * { -webkit-tap-highlight-color: transparent; }
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-thumb { background: rgba(148, 163, 184, 0.3); border-radius: 9999px; }
+  </style>
+</head>
+<body class="bg-slate-100 dark:bg-slate-950 text-slate-800 dark:text-slate-100 min-h-screen flex flex-col font-sans transition-colors duration-200">
+
+  <!-- TOP HEADER -->
+  <header class="bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 sticky top-0 z-40">
+    <div class="max-w-4xl mx-auto px-4 py-3 flex justify-between items-center">
+      <div class="flex items-center gap-3">
+        <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-500 flex items-center justify-center text-white font-bold shadow-md shadow-emerald-500/20">
+          <i class="fa-solid fa-square-check text-base"></i>
+        </div>
+        <div>
+          <h1 class="text-sm sm:text-base font-bold text-slate-900 dark:text-white">피부과학 제7판 5지선다 모의고사</h1>
+          <p class="text-[11px] text-slate-500 dark:text-slate-400">전문의 1차 시험 대비 객관식 실전 테스트</p>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <!-- 메인 카드 학습으로 돌아가기 버튼 -->
+        <a href="index.html" class="px-3 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold flex items-center gap-1.5 shadow transition">
+          <i class="fa-solid fa-layer-group"></i>
+          <span class="hidden sm:inline">암기 카드로 이동</span>
+        </a>
+        <button onclick="toggleTheme()" class="w-9 h-9 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-amber-400 flex items-center justify-center border border-slate-200 dark:border-slate-700 transition">
+          <i id="themeIcon" class="fa-solid fa-moon"></i>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN CONTAINER -->
+  <main class="max-w-4xl w-full mx-auto px-4 py-6 flex-1 space-y-5">
+    
+    <!-- 출제 옵션 설정 카드 -->
+    <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-5 sm:p-6 rounded-3xl shadow-sm space-y-4">
+      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 pb-3 border-b border-slate-100 dark:border-slate-800">
+        <div>
+          <h2 class="text-sm sm:text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
+            <i class="fa-solid fa-sliders text-emerald-500"></i> 시험 범위 및 출제 설정
+          </h2>
+          <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">내 카드노트에 저장된 지식을 바탕으로 AI가 실전 객관식 문항을 자동 생성합니다.</p>
+        </div>
+        <div id="dbCardCountBadge" class="text-xs px-2.5 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-semibold border border-slate-200 dark:border-slate-700">
+          카드 불러오는 중...
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-12 gap-3">
+        <div class="sm:col-span-8">
+          <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">교과서 챕터 선택</label>
+          <select id="quizChapterSelect" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500">
+            <option value="ALL">전체 챕터 무작위 출제</option>
+          </select>
+        </div>
+        <div class="sm:col-span-4 flex items-end">
+          <button onclick="startAiQuiz()" id="btnGenerateQuiz" class="w-full py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold flex items-center justify-center gap-2 shadow-lg shadow-emerald-600/20 transition active:scale-95">
+            <i class="fa-solid fa-wand-magic-sparkles text-amber-300"></i>
+            <span>모의고사 출제 (3문항)</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- 진행률 & 점수 바 -->
+      <div id="quizProgressHeader" class="hidden flex justify-between items-center text-xs font-semibold pt-2 border-t border-slate-100 dark:border-slate-800">
+        <span id="quizIndexText" class="text-slate-600 dark:text-slate-400 font-bold">문항 1 / 3</span>
+        <span id="quizScoreText" class="text-emerald-600 dark:text-emerald-400 font-bold">현재 맞힌 개수: 0</span>
+      </div>
+    </div>
+
+    <!-- 문항 풀이 영역 -->
+    <div id="quizQuestionCard" class="hidden bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-6 sm:p-8 rounded-3xl shadow-lg space-y-6">
+      <div>
+        <span id="quizBadgeChapter" class="text-[11px] font-bold px-3 py-1 rounded-full bg-emerald-50 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 border border-emerald-100 dark:border-emerald-800"></span>
+        <h3 id="quizQuestionTitle" class="text-base sm:text-lg font-bold text-slate-900 dark:text-white mt-3 leading-relaxed"></h3>
+      </div>
+
+      <!-- 5지선다 보기 버튼 리스트 (① ~ ⑤) -->
+      <div id="quizChoiceList" class="space-y-3"></div>
+
+      <!-- 정답 및 상세 해설 박스 -->
+      <div id="quizExplanationBox" class="hidden p-4 rounded-2xl bg-emerald-50/70 dark:bg-emerald-950/40 border border-emerald-100 dark:border-emerald-900/60 space-y-2">
+        <div class="flex items-center gap-1.5 text-xs font-bold text-emerald-700 dark:text-emerald-300">
+          <i class="fa-solid fa-book-open"></i> 피부과학 제7판 기준 정답 해설
+        </div>
+        <p id="quizExplanationContent" class="text-xs text-slate-700 dark:text-slate-200 leading-relaxed whitespace-pre-wrap"></p>
+      </div>
+
+      <div class="flex justify-end pt-2">
+        <button onclick="nextQuizStep()" id="btnNextStep" class="hidden px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold shadow-md transition flex items-center gap-1.5">
+          <span>다음 문항</span> <i class="fa-solid fa-arrow-right"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- 초기 상태 안내 박스 -->
+    <div id="quizPlaceholder" class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-12 rounded-3xl text-center space-y-3">
+      <div class="w-12 h-12 rounded-2xl bg-emerald-50 dark:bg-emerald-950 text-emerald-600 dark:text-emerald-400 mx-auto flex items-center justify-center text-xl">
+        <i class="fa-solid fa-graduation-cap"></i>
+      </div>
+      <h4 class="text-sm font-bold text-slate-900 dark:text-white">모의고사를 출제할 준비가 되었습니다.</h4>
+      <p class="text-xs text-slate-500 dark:text-slate-400 max-w-sm mx-auto">상단에서 원하는 챕터를 고른 후 <b>[모의고사 출제]</b> 버튼을 누르면, 내가 등록한 카드 지문을 기반으로 실제 보드 1차 스타일의 5지선다 문제가 생성됩니다.</p>
+    </div>
+
+  </main>
+
+  <script>
+    // ==========================================
+    // 본인의 Firebase Config 키를 붙여넣으세요
+    // ==========================================
+    const firebaseConfig = {
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+      projectId: "YOUR_PROJECT_ID",
+      storageBucket: "YOUR_PROJECT_ID.appspot.com",
+      messagingSenderId: "YOUR_SENDER_ID",
+      appId: "YOUR_APP_ID"
+    };
+
+    const CHAPTERS = [
+      "CHAPTER 01 피부의 구조와 기능", "CHAPTER 02 피부조직병리학", "CHAPTER 03 피부의 증상, 징후와 진단",
+      "CHAPTER 04 피부 면역학", "CHAPTER 05 가려움증", "CHAPTER 06 유전피부질환", "CHAPTER 07 광의학",
+      "CHAPTER 08 물리적 피부질환과 스포츠피부질환", "CHAPTER 09 습진", "CHAPTER 10 직업피부질환",
+      "CHAPTER 11 약물발진, 홍반 및 두드러기", "CHAPTER 12 구진인설질환", "CHAPTER 13 수포질환",
+      "CHAPTER 14 감염피부질환", "CHAPTER 15 피부부속기질환", "CHAPTER 16 색소이상증", "CHAPTER 17 피부혈관질환",
+      "CHAPTER 18 결합조직질환", "CHAPTER 19 피하지방질환", "CHAPTER 20 점막질환", "CHAPTER 21 임신피부질환",
+      "CHAPTER 22 신생아피부질환", "CHAPTER 23 피부노화", "CHAPTER 24 결핍 질환, 대사이상, 포르피린증",
+      "CHAPTER 25 내분비질환, 피부점액증, 손발바닥각질피부증, 진피결합조직질환", "CHAPTER 26 모반과 종양",
+      "CHAPTER 27 피부질환의 치료", "CHAPTER 28 피부미용학"
+    ];
+
+    let db = null;
+    let loadedCards = [];
+    let currentQuizList = [];
+    let currentQuizIdx = 0;
+    let quizScore = 0;
+    let isAnswerSelected = false;
+
+    function initTheme() {
+      const savedTheme = localStorage.getItem('derm_theme') || 'dark';
+      if (savedTheme === 'light') {
+        document.getElementById('htmlRoot').classList.remove('dark');
+        document.getElementById('themeIcon').className = "fa-solid fa-sun";
+      } else {
+        document.getElementById('htmlRoot').classList.add('dark');
+        document.getElementById('themeIcon').className = "fa-solid fa-moon";
+      }
+    }
+
+    function toggleTheme() {
+      const isDark = document.getElementById('htmlRoot').classList.toggle('dark');
+      localStorage.setItem('derm_theme', isDark ? 'dark' : 'light');
+      document.getElementById('themeIcon').className = isDark ? "fa-solid fa-moon" : "fa-solid fa-sun";
+    }
+
+    function init() {
+      initTheme();
+
+      const select = document.getElementById('quizChapterSelect');
+      CHAPTERS.forEach(ch => {
+        select.innerHTML += `<option value="${ch}">${ch}</option>`;
+      });
+
+      try {
+        firebase.initializeApp(firebaseConfig);
+        db = firebase.firestore();
+
+        db.collection("derm_cards_7th").onSnapshot(snapshot => {
+          loadedCards = [];
+          snapshot.forEach(doc => loadedCards.push({ id: doc.id, ...doc.data() }));
+          document.getElementById('dbCardCountBadge').innerText = `등록된 카드: ${loadedCards.length}개`;
+        });
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    async function startAiQuiz() {
+      const apiKey = localStorage.getItem('derm_gemini_api_key');
+      if (!apiKey) {
+        alert("메인 페이지에서 Gemini API 키를 먼저 설정해주세요!");
+        window.location.href = "index.html";
+        return;
+      }
+
+      const selectedCh = document.getElementById('quizChapterSelect').value;
+      let targetCards = loadedCards;
+      if (selectedCh !== 'ALL') {
+        targetCards = loadedCards.filter(c => c.chapter === selectedCh);
+      }
+
+      if (targetCards.length === 0) {
+        alert("선택한 챕터에 등록된 카드가 없습니다. 카드를 먼저 추가해주세요!");
+        return;
+      }
+
+      const shuffled = [...targetCards].sort(() => 0.5 - Math.random());
+      const sample = shuffled.slice(0, 4);
+      const context = sample.map((c, i) => `[카드 ${i+1}] ${c.chapter}\n문제점: ${c.front}\n핵심: ${c.back}`).join('\n\n');
+
+      const prompt = `대한민국 피부과 전문의 1차 시험 형식의 5지선다 객관식 3문항을 출제하세요.
+사용자의 《피부과학 제7판》 카드노트 지식을 정확히 활용하세요:
+${context}
+
+[출제 규칙]
+1. 실제 시험처럼 "다음 중 ...에 대한 설명으로 옳은/옳지 않은 것은?" 양식 사용.
+2. 각 문항당 ①~⑤ 5개의 보기를 제공하고, 전문의 시험 수준의 매력적인 오답을 구성할 것.
+3. 반드시 아래 JSON 배열 형식으로만 응답할 것 (마크다운 코드블록이나 다른 설명 제외):
+[
+  {
+    "chapter": "해당 챕터명",
+    "question": "문제 지문",
+    "choices": ["선지 1", "선지 2", "선지 3", "선지 4", "선지 5"],
+    "answerIndex": 0,
+    "explanation": "제7판 교과서 기준 상세 정답 및 오답 해설"
+  }
+]`;
+
+      const btn = document.getElementById('btnGenerateQuiz');
+      btn.disabled = true;
+      btn.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin"></i> 문제 출제 중...`;
+
+      try {
+        const rawJson = await fetchGeminiModel(prompt, apiKey);
+        const cleaned = rawJson.replace(/```json/gi, '').replace(/```/g, '').trim();
+        const parsed = JSON.parse(cleaned);
+
+        if (!Array.isArray(parsed) || parsed.length === 0) throw new Error("형식 오류");
+
+        currentQuizList = parsed;
+        currentQuizIdx = 0;
+        quizScore = 0;
+
+        document.getElementById('quizPlaceholder').classList.add('hidden');
+        document.getElementById('quizQuestionCard').classList.remove('hidden');
+        document.getElementById('quizProgressHeader').classList.remove('hidden');
+
+        renderCurrentQuestion();
+      } catch (err) {
+        alert("문제 출제 실패: " + err.message);
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = `<i class="fa-solid fa-wand-magic-sparkles text-amber-300"></i> <span>모의고사 출제 (3문항)</span>`;
+      }
+    }
+
+    function renderCurrentQuestion() {
+      const q = currentQuizList[currentQuizIdx];
+      if (!q) return;
+
+      isAnswerSelected = false;
+      document.getElementById('quizIndexText').innerText = `문항 ${currentQuizIdx + 1} / ${currentQuizList.length}`;
+      document.getElementById('quizScoreText').innerText = `현재 맞힌 개수: ${quizScore}`;
+
+      document.getElementById('quizBadgeChapter').innerText = q.chapter || '피부과학 제7판';
+      document.getElementById('quizQuestionTitle').innerText = `Q${currentQuizIdx + 1}. ${q.question}`;
+
+      const symbols = ['①', '②', '③', '④', '⑤'];
+      const container = document.getElementById('quizChoiceList');
+      container.innerHTML = q.choices.map((choice, idx) => `
+        <button onclick="handleChoiceSelect(${idx})" id="choiceBtn_${idx}" class="w-full text-left p-4 rounded-2xl bg-slate-50 dark:bg-slate-950/70 hover:bg-slate-100 dark:hover:bg-slate-800/80 border border-slate-200 dark:border-slate-800 text-xs sm:text-sm font-medium text-slate-800 dark:text-slate-200 transition flex items-start gap-3">
+          <span class="font-bold text-emerald-600 dark:text-emerald-400 text-sm">${symbols[idx]}</span>
+          <span class="leading-relaxed flex-1">${choice}</span>
+        </button>
+      `).join('');
+
+      document.getElementById('quizExplanationBox').classList.add('hidden');
+      document.getElementById('btnNextStep').classList.add('hidden');
+    }
+
+    function handleChoiceSelect(selectedIdx) {
+      if (isAnswerSelected) return;
+      isAnswerSelected = true;
+
+      const q = currentQuizList[currentQuizIdx];
+      const isCorrect = (selectedIdx === q.answerIndex);
+      if (isCorrect) quizScore++;
+
+      document.getElementById('quizScoreText').innerText = `현재 맞힌 개수: ${quizScore}`;
+
+      q.choices.forEach((_, idx) => {
+        const btn = document.getElementById(`choiceBtn_${idx}`);
+        btn.disabled = true;
+
+        if (idx === q.answerIndex) {
+          btn.className = "w-full text-left p-4 rounded-2xl bg-emerald-50 dark:bg-emerald-950/80 border-2 border-emerald-500 text-xs sm:text-sm font-bold text-emerald-900 dark:text-emerald-200 transition flex items-start gap-3";
+          btn.innerHTML += `<i class="fa-solid fa-circle-check text-emerald-500 text-base ml-auto mt-0.5"></i>`;
+        } else if (idx === selectedIdx && !isCorrect) {
+          btn.className = "w-full text-left p-4 rounded-2xl bg-rose-50 dark:bg-rose-950/80 border-2 border-rose-500 text-xs sm:text-sm font-bold text-rose-900 dark:text-rose-200 transition flex items-start gap-3";
+          btn.innerHTML += `<i class="fa-solid fa-circle-xmark text-rose-500 text-base ml-auto mt-0.5"></i>`;
+        } else {
+          btn.classList.add('opacity-40');
+        }
+      });
+
+      document.getElementById('quizExplanationContent').innerText = q.explanation;
+      document.getElementById('quizExplanationBox').classList.remove('hidden');
+
+      const nextBtn = document.getElementById('btnNextStep');
+      if (currentQuizIdx < currentQuizList.length - 1) {
+        nextBtn.innerHTML = `<span>다음 문항</span> <i class="fa-solid fa-arrow-right"></i>`;
+      } else {
+        nextBtn.innerHTML = `<span>모의고사 결과 보기</span> <i class="fa-solid fa-trophy"></i>`;
+      }
+      nextBtn.classList.remove('hidden');
+    }
+
+    function nextQuizStep() {
+      if (currentQuizIdx < currentQuizList.length - 1) {
+        currentQuizIdx++;
+        renderCurrentQuestion();
+      } else {
+        const pct = Math.round((quizScore / currentQuizList.length) * 100);
+        alert(`🎉 모의고사 종료!\n\n총 ${currentQuizList.length}문항 중 ${quizScore}문항 정답 (정답률: ${pct}%)\n틀린 문제는 메인 플래시카드에서 다시 복습하세요!`);
+        document.getElementById('quizQuestionCard').classList.add('hidden');
+        document.getElementById('quizProgressHeader').classList.add('hidden');
+        document.getElementById('quizPlaceholder').classList.remove('hidden');
+      }
+    }
+
+    async function fetchGeminiModel(prompt, apiKey) {
+      const models = ["gemini-3-flash-preview", "gemini-3.5-flash", "gemini-3.1-flash-lite"];
+      for (const m of models) {
+        try {
+          const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${m}:generateContent?key=${apiKey}`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              contents: [{ role: "user", parts: [{ text: prompt }] }]
+            })
+          });
+          const data = await res.json();
+          if (data.candidates?.[0]?.content?.parts?.[0]?.text) {
+            return data.candidates[0].content.parts[0].text;
+          }
+        } catch (e) {
+          console.warn(`[${m}] 시도 실패, 다음 모델로 대체:`, e);
+        }
+      }
+      throw new Error("AI 응답을 가져오지 못했습니다.");
+    }
+
+    window.onload = init;
+  </script>
+</body>
+</html>
