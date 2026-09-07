@@ -31,7 +31,7 @@
 </head>
 <body class="bg-slate-100 dark:bg-slate-950 text-slate-800 dark:text-slate-100 min-h-screen flex flex-col font-sans transition-colors duration-200">
 
-  <!-- TOP HEADER -->
+  <!-- HEADER -->
   <header class="bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 sticky top-0 z-40">
     <div class="max-w-4xl mx-auto px-4 py-3 flex justify-between items-center">
       <div class="flex items-center gap-3">
@@ -39,8 +39,8 @@
           <i class="fa-solid fa-user-doctor text-base"></i>
         </div>
         <div>
-          <h1 class="text-sm sm:text-base font-bold text-slate-900 dark:text-white">피부과학 제7판 실전 증례(CME) 모의고사</h1>
-          <p class="text-[11px] text-slate-500 dark:text-slate-400">전문의 1차 임상 증례형 & 2차 슬라이드 문항 대비</p>
+          <h1 class="text-sm sm:text-base font-bold text-slate-900 dark:text-white">피부과학 제7판 실전 증례 모의고사</h1>
+          <p class="text-[11px] text-slate-500 dark:text-slate-400">전문의 1차 임상 증례 & 2차 사진형 대비</p>
         </div>
       </div>
 
@@ -59,14 +59,14 @@
   <!-- MAIN CONTAINER -->
   <main class="max-w-4xl w-full mx-auto px-4 py-6 flex-1 space-y-5">
     
-    <!-- 출제 옵션 설정 패널 -->
+    <!-- 출제 패널 -->
     <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-5 sm:p-6 rounded-3xl shadow-sm space-y-4">
       <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 pb-3 border-b border-slate-100 dark:border-slate-800">
         <div>
           <h2 class="text-sm sm:text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
-            <i class="fa-solid fa-stethoscope text-emerald-500"></i> 임상 증례(Clinical Vignette) 출제 세팅
+            <i class="fa-solid fa-stethoscope text-emerald-500"></i> 임상 증례(CME) 출제 설정
           </h2>
-          <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">내 카드노트의 지식을 환자 나이, 병력, 신체 진찰, 병리 소견 중심의 실전 증례 문제로 재구성합니다.</p>
+          <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">내 카드노트와 첨부 사진을 종합 분석하여 5지선다 문제를 출제합니다.</p>
         </div>
         <div id="dbCardCountBadge" class="text-xs px-2.5 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-semibold border border-slate-200 dark:border-slate-700">
           카드 불러오는 중...
@@ -74,41 +74,37 @@
       </div>
 
       <div class="grid grid-cols-1 sm:grid-cols-12 gap-3">
-        <!-- 챕터 선택 -->
         <div class="sm:col-span-6">
-          <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">교과서 챕터 범위</label>
+          <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">교과서 챕터 선택</label>
           <select id="quizChapterSelect" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500">
-            <option value="ALL">전체 챕터 무작위 증례 출제</option>
+            <option value="ALL">전체 챕터 무작위 출제</option>
           </select>
         </div>
 
-        <!-- 문항 수 선택 -->
         <div class="sm:col-span-3">
-          <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">출제 문항 수</label>
+          <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">문항 수 선택</label>
           <select id="quizCountSelect" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 font-semibold">
-            <option value="5" selected>5 문항 (증례 퀵 테스트)</option>
-            <option value="10">10 문항 (실전 CME 집중)</option>
-            <option value="15">15 문항 (전문의 1차 하프)</option>
+            <option value="5" selected>5 문항 (빠른 테스트)</option>
+            <option value="10">10 문항 (실전 집중)</option>
+            <option value="15">15 문항 (하프 모의고사)</option>
           </select>
         </div>
 
-        <!-- 출제 버튼 -->
         <div class="sm:col-span-3 flex items-end">
           <button onclick="startAiQuiz()" id="btnGenerateQuiz" class="w-full py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold flex items-center justify-center gap-2 shadow-lg shadow-emerald-600/20 transition active:scale-95">
             <i class="fa-solid fa-wand-magic-sparkles text-amber-300"></i>
-            <span>증례 모의고사 시작</span>
+            <span>모의고사 시작</span>
           </button>
         </div>
       </div>
 
-      <!-- 진행률 & 점수 바 -->
       <div id="quizProgressHeader" class="hidden flex justify-between items-center text-xs font-semibold pt-2 border-t border-slate-100 dark:border-slate-800">
         <span id="quizIndexText" class="text-slate-600 dark:text-slate-400 font-bold">문항 1 / 5</span>
         <span id="quizScoreText" class="text-emerald-600 dark:text-emerald-400 font-bold">현재 맞힌 개수: 0</span>
       </div>
     </div>
 
-    <!-- 문항 풀이 영역 -->
+    <!-- 문항 카드 영역 -->
     <div id="quizQuestionCard" class="hidden bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-6 sm:p-8 rounded-3xl shadow-lg space-y-6">
       <div>
         <div class="flex items-center gap-2 mb-2">
@@ -121,23 +117,21 @@
           </span>
         </div>
 
-        <!-- 환자 증례 지문 -->
-        <div class="mt-3 p-4 rounded-2xl bg-slate-50 dark:bg-slate-950/80 border border-slate-200 dark:border-slate-800/80 text-xs sm:text-sm text-slate-800 dark:text-slate-200 leading-relaxed font-serif whitespace-pre-wrap" id="quizCaseVignette"></div>
+        <div class="mt-3 p-4 rounded-2xl bg-slate-50 dark:bg-slate-950/80 border border-slate-200 dark:border-slate-800/80 text-xs sm:text-sm text-slate-800 dark:text-slate-200 leading-relaxed whitespace-pre-wrap" id="quizCaseVignette"></div>
 
-        <!-- 핵심 질문 -->
         <h3 id="quizQuestionTitle" class="text-sm sm:text-base font-bold text-slate-900 dark:text-white mt-4 leading-snug"></h3>
 
-        <!-- 첨부 사진 갤러리 (임상/병리 사진) -->
+        <!-- 사진 갤러리 -->
         <div id="quizImageGallery" class="hidden mt-4 grid grid-cols-2 sm:grid-cols-3 gap-2.5 p-2 rounded-2xl bg-slate-100 dark:bg-slate-950 border border-slate-200 dark:border-slate-800"></div>
       </div>
 
-      <!-- 5지선다 보기 리스트 (① ~ ⑤) -->
+      <!-- 보기 리스트 (① ~ ⑤) -->
       <div id="quizChoiceList" class="space-y-3"></div>
 
-      <!-- 정답 및 상세 해설 박스 -->
+      <!-- 정답 해설 -->
       <div id="quizExplanationBox" class="hidden p-4 rounded-2xl bg-emerald-50/70 dark:bg-emerald-950/40 border border-emerald-100 dark:border-emerald-900/60 space-y-2">
         <div class="flex items-center gap-1.5 text-xs font-bold text-emerald-700 dark:text-emerald-300">
-          <i class="fa-solid fa-book-open"></i> 피부과학 제7판 기준 정답 해설 및 증례 고찰
+          <i class="fa-solid fa-book-open"></i> 피부과학 제7판 기준 정답 해설
         </div>
         <p id="quizExplanationContent" class="text-xs text-slate-700 dark:text-slate-200 leading-relaxed whitespace-pre-wrap"></p>
       </div>
@@ -149,13 +143,13 @@
       </div>
     </div>
 
-    <!-- 초기 안내 박스 -->
+    <!-- 빈 상태 안내 -->
     <div id="quizPlaceholder" class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-12 rounded-3xl text-center space-y-3">
       <div class="w-12 h-12 rounded-2xl bg-emerald-50 dark:bg-emerald-950 text-emerald-600 dark:text-emerald-400 mx-auto flex items-center justify-center text-xl">
         <i class="fa-solid fa-user-doctor"></i>
       </div>
-      <h4 class="text-sm font-bold text-slate-900 dark:text-white">실전 증례형 모의고사를 시작할 수 있습니다.</h4>
-      <p class="text-xs text-slate-500 dark:text-slate-400 max-w-sm mx-auto">전문의 1차 시험 및 CME 유형에 맞춰, 나이/병력/이학적 소견/조직 소견이 종합된 고난도 임상 증례 5지선다 문항을 출제합니다.</p>
+      <h4 class="text-sm font-bold text-slate-900 dark:text-white">모의고사를 출제할 준비가 되었습니다.</h4>
+      <p class="text-xs text-slate-500 dark:text-slate-400 max-w-sm mx-auto">챕터와 문제 수를 고른 후 <b>[모의고사 시작]</b> 버튼을 누르면 환자 나이, 병력, 소견이 담긴 실전 5지선다 문항이 생성됩니다.</p>
     </div>
 
   </main>
@@ -170,189 +164,15 @@
 
   <script>
     // ==========================================
-    // 본인의 Firebase Config 키를 유지하세요
+    // 본인의 Firebase Config 키를 입력하세요
     // ==========================================
-<!DOCTYPE html>
-<html lang="ko" class="dark" id="htmlRoot">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>피부과학 제7판 5지선다 실전 모의고사</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      darkMode: 'class',
-      theme: {
-        extend: {
-          colors: {
-            brand: { 500: '#6366f1', 600: '#4f46e5', 700: '#4338ca' }
-          }
-        }
-      }
-    }
-  </script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  
-  <!-- Firebase SDK -->
-  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
-
-  <style>
-    * { -webkit-tap-highlight-color: transparent; }
-    ::-webkit-scrollbar { width: 6px; }
-    ::-webkit-scrollbar-thumb { background: rgba(148, 163, 184, 0.3); border-radius: 9999px; }
-  </style>
-</head>
-<body class="bg-slate-100 dark:bg-slate-950 text-slate-800 dark:text-slate-100 min-h-screen flex flex-col font-sans transition-colors duration-200">
-
-  <!-- TOP HEADER -->
-  <header class="bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 sticky top-0 z-40">
-    <div class="max-w-4xl mx-auto px-4 py-3 flex justify-between items-center">
-      <div class="flex items-center gap-3">
-        <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-500 flex items-center justify-center text-white font-bold shadow-md shadow-emerald-500/20">
-          <i class="fa-solid fa-user-doctor text-base"></i>
-        </div>
-        <div>
-          <h1 class="text-sm sm:text-base font-bold text-slate-900 dark:text-white">피부과학 제7판 실전 증례(CME) 모의고사</h1>
-          <p class="text-[11px] text-slate-500 dark:text-slate-400">전문의 1차 임상 증례형 & 2차 슬라이드 문항 대비</p>
-        </div>
-      </div>
-
-      <div class="flex items-center gap-2">
-        <a href="index.html" class="px-3 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold flex items-center gap-1.5 shadow transition">
-          <i class="fa-solid fa-layer-group"></i>
-          <span class="hidden sm:inline">암기 카드로 이동</span>
-        </a>
-        <button onclick="toggleTheme()" class="w-9 h-9 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-amber-400 flex items-center justify-center border border-slate-200 dark:border-slate-700 transition">
-          <i id="themeIcon" class="fa-solid fa-moon"></i>
-        </button>
-      </div>
-    </div>
-  </header>
-
-  <!-- MAIN CONTAINER -->
-  <main class="max-w-4xl w-full mx-auto px-4 py-6 flex-1 space-y-5">
-    
-    <!-- 출제 옵션 설정 패널 -->
-    <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-5 sm:p-6 rounded-3xl shadow-sm space-y-4">
-      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 pb-3 border-b border-slate-100 dark:border-slate-800">
-        <div>
-          <h2 class="text-sm sm:text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
-            <i class="fa-solid fa-stethoscope text-emerald-500"></i> 임상 증례(Clinical Vignette) 출제 세팅
-          </h2>
-          <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">내 카드노트의 지식을 환자 나이, 병력, 신체 진찰, 병리 소견 중심의 실전 증례 문제로 재구성합니다.</p>
-        </div>
-        <div id="dbCardCountBadge" class="text-xs px-2.5 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-semibold border border-slate-200 dark:border-slate-700">
-          카드 불러오는 중...
-        </div>
-      </div>
-
-      <div class="grid grid-cols-1 sm:grid-cols-12 gap-3">
-        <!-- 챕터 선택 -->
-        <div class="sm:col-span-6">
-          <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">교과서 챕터 범위</label>
-          <select id="quizChapterSelect" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500">
-            <option value="ALL">전체 챕터 무작위 증례 출제</option>
-          </select>
-        </div>
-
-        <!-- 문항 수 선택 -->
-        <div class="sm:col-span-3">
-          <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">출제 문항 수</label>
-          <select id="quizCountSelect" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 font-semibold">
-            <option value="5" selected>5 문항 (증례 퀵 테스트)</option>
-            <option value="10">10 문항 (실전 CME 집중)</option>
-            <option value="15">15 문항 (전문의 1차 하프)</option>
-          </select>
-        </div>
-
-        <!-- 출제 버튼 -->
-        <div class="sm:col-span-3 flex items-end">
-          <button onclick="startAiQuiz()" id="btnGenerateQuiz" class="w-full py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold flex items-center justify-center gap-2 shadow-lg shadow-emerald-600/20 transition active:scale-95">
-            <i class="fa-solid fa-wand-magic-sparkles text-amber-300"></i>
-            <span>증례 모의고사 시작</span>
-          </button>
-        </div>
-      </div>
-
-      <!-- 진행률 & 점수 바 -->
-      <div id="quizProgressHeader" class="hidden flex justify-between items-center text-xs font-semibold pt-2 border-t border-slate-100 dark:border-slate-800">
-        <span id="quizIndexText" class="text-slate-600 dark:text-slate-400 font-bold">문항 1 / 5</span>
-        <span id="quizScoreText" class="text-emerald-600 dark:text-emerald-400 font-bold">현재 맞힌 개수: 0</span>
-      </div>
-    </div>
-
-    <!-- 문항 풀이 영역 -->
-    <div id="quizQuestionCard" class="hidden bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-6 sm:p-8 rounded-3xl shadow-lg space-y-6">
-      <div>
-        <div class="flex items-center gap-2 mb-2">
-          <span id="quizBadgeChapter" class="text-[11px] font-bold px-3 py-1 rounded-full bg-emerald-50 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 border border-emerald-100 dark:border-emerald-800"></span>
-          <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-100 dark:bg-amber-950 text-amber-800 dark:text-amber-300 border border-amber-200 dark:border-amber-800 flex items-center gap-1">
-            <i class="fa-solid fa-notes-medical"></i> Clinical Vignette
-          </span>
-          <span id="quizBadgePhoto" class="hidden text-[10px] font-bold px-2 py-0.5 rounded-full bg-indigo-100 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 flex items-center gap-1">
-            <i class="fa-solid fa-camera"></i> 사진 증례
-          </span>
-        </div>
-
-        <!-- 환자 증례 지문 -->
-        <div class="mt-3 p-4 rounded-2xl bg-slate-50 dark:bg-slate-950/80 border border-slate-200 dark:border-slate-800/80 text-xs sm:text-sm text-slate-800 dark:text-slate-200 leading-relaxed font-serif whitespace-pre-wrap" id="quizCaseVignette"></div>
-
-        <!-- 핵심 질문 -->
-        <h3 id="quizQuestionTitle" class="text-sm sm:text-base font-bold text-slate-900 dark:text-white mt-4 leading-snug"></h3>
-
-        <!-- 첨부 사진 갤러리 (임상/병리 사진) -->
-        <div id="quizImageGallery" class="hidden mt-4 grid grid-cols-2 sm:grid-cols-3 gap-2.5 p-2 rounded-2xl bg-slate-100 dark:bg-slate-950 border border-slate-200 dark:border-slate-800"></div>
-      </div>
-
-      <!-- 5지선다 보기 리스트 (① ~ ⑤) -->
-      <div id="quizChoiceList" class="space-y-3"></div>
-
-      <!-- 정답 및 상세 해설 박스 -->
-      <div id="quizExplanationBox" class="hidden p-4 rounded-2xl bg-emerald-50/70 dark:bg-emerald-950/40 border border-emerald-100 dark:border-emerald-900/60 space-y-2">
-        <div class="flex items-center gap-1.5 text-xs font-bold text-emerald-700 dark:text-emerald-300">
-          <i class="fa-solid fa-book-open"></i> 피부과학 제7판 기준 정답 해설 및 증례 고찰
-        </div>
-        <p id="quizExplanationContent" class="text-xs text-slate-700 dark:text-slate-200 leading-relaxed whitespace-pre-wrap"></p>
-      </div>
-
-      <div class="flex justify-end pt-2">
-        <button onclick="nextQuizStep()" id="btnNextStep" class="hidden px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold shadow-md transition flex items-center gap-1.5">
-          <span>다음 문항</span> <i class="fa-solid fa-arrow-right"></i>
-        </button>
-      </div>
-    </div>
-
-    <!-- 초기 안내 박스 -->
-    <div id="quizPlaceholder" class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-12 rounded-3xl text-center space-y-3">
-      <div class="w-12 h-12 rounded-2xl bg-emerald-50 dark:bg-emerald-950 text-emerald-600 dark:text-emerald-400 mx-auto flex items-center justify-center text-xl">
-        <i class="fa-solid fa-user-doctor"></i>
-      </div>
-      <h4 class="text-sm font-bold text-slate-900 dark:text-white">실전 증례형 모의고사를 시작할 수 있습니다.</h4>
-      <p class="text-xs text-slate-500 dark:text-slate-400 max-w-sm mx-auto">전문의 1차 시험 및 CME 유형에 맞춰, 나이/병력/이학적 소견/조직 소견이 종합된 고난도 임상 증례 5지선다 문항을 출제합니다.</p>
-    </div>
-
-  </main>
-
-  <!-- IMAGE ZOOM MODAL -->
-  <div id="imageModal" class="fixed inset-0 bg-black/90 z-50 hidden flex items-center justify-center p-4" onclick="closeImageZoom()">
-    <div class="relative max-w-4xl max-h-full" onclick="event.stopPropagation()">
-      <img id="zoomedImg" src="" alt="Enlarged view" class="max-h-[85vh] rounded-2xl shadow-2xl object-contain">
-      <button class="absolute -top-10 right-0 text-white text-xl p-2 cursor-pointer hover:opacity-80" onclick="closeImageZoom()"><i class="fa-solid fa-xmark"></i> 닫기</button>
-    </div>
-  </div>
-
-  <script>
-    // ==========================================
-    // 본인의 Firebase Config 키를 유지하세요
-    // ==========================================
-    const firebaseConfig = {
-      apiKey: "YOUR_API_KEY",
-      authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-      projectId: "YOUR_PROJECT_ID",
-      storageBucket: "YOUR_PROJECT_ID.appspot.com",
-      messagingSenderId: "YOUR_SENDER_ID",
-      appId: "YOUR_APP_ID"
+  const firebaseConfig = {
+      apiKey: "AIzaSyDdWgBFgtd6PvC6DGgTkzcnd1cljjCkxJU",
+      authDomain: "dermaboard.firebaseapp.com",
+      projectId: "dermaboard",
+      storageBucket: "dermaboard.firebasestorage.app",
+      messagingSenderId: "792660371429",
+      appId: "1:792660371429:web:2a275b2482648fe52fb10c"
     };
 
     const CHAPTERS = [
@@ -399,6 +219,11 @@
         select.innerHTML += `<option value="${ch}">${ch}</option>`;
       });
 
+      if (firebaseConfig.apiKey === "YOUR_API_KEY") {
+        document.getElementById('dbCardCountBadge').innerText = "Firebase 키 입력 필요";
+        return;
+      }
+
       try {
         firebase.initializeApp(firebaseConfig);
         db = firebase.firestore();
@@ -407,6 +232,9 @@
           loadedCards = [];
           snapshot.forEach(doc => loadedCards.push({ id: doc.id, ...doc.data() }));
           document.getElementById('dbCardCountBadge').innerText = `등록된 카드: ${loadedCards.length}개`;
+        }, err => {
+          console.error(err);
+          document.getElementById('dbCardCountBadge').innerText = "DB 연결 오류";
         });
       } catch (err) {
         console.error(err);
@@ -445,12 +273,8 @@
         return;
       }
 
-      const withPhotos = targetCards.filter(c => extractCardImages(c).length > 0);
-      const withoutPhotos = targetCards.filter(c => extractCardImages(c).length === 0);
-
-      withPhotos.sort(() => 0.5 - Math.random());
-      withoutPhotos.sort(() => 0.5 - Math.random());
-
+      const withPhotos = targetCards.filter(c => extractCardImages(c).length > 0).sort(() => 0.5 - Math.random());
+      const withoutPhotos = targetCards.filter(c => extractCardImages(c).length === 0).sort(() => 0.5 - Math.random());
       const combinedPool = [...withPhotos, ...withoutPhotos].slice(0, Math.min(targetCards.length, Math.max(requestedCount, 8)));
 
       const sampleContext = combinedPool.map((c, i) => {
@@ -460,35 +284,27 @@
 - 핵심/해설: ${c.back}`;
       }).join('\n\n');
 
-      // ★ 실제 전문의 1차 및 CME 스타일 증례 제시형(Clinical Vignette) 출제 프롬프트
       const prompt = `당신은 대한민국 대한피부과학회 전문의 1차 및 2차 슬라이드 시험 출제위원장입니다.
 아래 제공된 응시자의 《피부과학 제7판》 카드노트 핵심 지식을 바탕으로, 실제 전문의 시험에 출제되는 고난도 임상 증례(Clinical Vignette) 및 CME 형식의 5지선다 객관식 총 ${requestedCount}문항을 출제하세요.
 
 [카드노트 지식 풀]
 ${sampleContext}
 
-[출제 필수 원칙 - 실제 전문의 1차 & CME 표준 양식 준수]
+[출제 필수 원칙]
 1. 총 정확히 ${requestedCount}문항을 출제할 것.
-2. 지문 구성 (Clinical Vignette):
-   - 각 문항은 반드시 환자의 성별/연령, 내원 기간, 호소 증상(소양증, 통증 등), 발생 부위 및 병변 양상(구진, 홍반, 인설, 수포, 궤양 등), 신체 진찰 및 병리 조직검사/면역형광검사 소견이 짜임새 있게 기술된 증례(Vignette)를 갖출 것.
-   - 예시: "52세 여자가 1개월 전부터 구강 점막의 미란과 체간의 이완성 수포를 주소로 내원하였다. 신체 진찰상 니콜스키 징후는 양성이었고, 병변부 조직검사상 기저층 직상부 극세포해리가 관찰되었다."
-   - 만약 소속번호에 '(★임상/병리 사진 첨부됨)' 표기가 있는 경우, 지문에 "(사진 1)과 같은 병변을 보이는...", "(사진 1)의 조직병리학적 소견을 특징으로 하는..."과 같이 사진을 판독해야 풀 수 있는 사진형 증례 문항으로 유기적으로 작성할 것.
-3. 질문 유형:
-   - "이 환자에서 가장 의심되는 질환은?"
-   - "이 질환의 발생 기전과 연관된 표적 자가항원(또는 돌연변이 유전자)은?"
-   - "이 환자에게 1차적으로 투여해야 할 가장 적절한 약제는?"
-   - "이 환자의 확진을 위해 시행할 직접면역형광검사(DIF) 소견으로 옳은 것은?"
-4. 보기는 ①부터 ⑤까지 5개로 구성하며, 감별 질환군에 속하는 전문의 수준의 정교하고 매력적인 오답 선지(Distractor)를 배치할 것.
-5. 반드시 아래 JSON 배열 포맷으로만 응답할 것 (마크다운 코드블록이나 다른 부연 설명 일체 제외):
+2. 각 문항은 환자의 연령/성별, 증상 기간, 병변 양상, 신체 진찰 및 병리/DIF 검사 소견이 짜임새 있게 기술된 증례(Vignette)를 갖출 것.
+3. 소속번호에 '(★임상/병리 사진 첨부됨)' 표기가 있는 경우, 지문에 "(사진 1)과 같은 병변을 보이는...", "(사진 1)의 조직병리학적 소견을 특징으로 하는..."과 같이 사진 판독형 문항으로 작성할 것.
+4. 보기는 ①부터 ⑤까지 5개로 구성하고, 매력적인 오답 선지(Distractor)를 배치할 것.
+5. 반드시 아래 JSON 배열 형식으로만 응답할 것 (추가 설명이나 마크다운 코드블록 제외):
 [
   {
     "cardIndex": 0,
     "chapter": "챕터명",
-    "caseVignette": "환자 증례 본문 (나이, 성별, 증상, 병리/진찰 소견 등 상세 서술)",
+    "caseVignette": "환자 증례 본문 (나이, 성별, 병력, 진찰 소견 등)",
     "question": "구체적인 질문 문장",
     "choices": ["선지 1", "선지 2", "선지 3", "선지 4", "선지 5"],
     "answerIndex": 0,
-    "explanation": "제7판 교과서 기준 증례 판독 및 정답/오답 상세 해설"
+    "explanation": "제7판 교과서 기준 증례 판독 및 정답/오답 해설"
   }
 ]`;
 
@@ -523,7 +339,7 @@ ${sampleContext}
         alert("문제 출제 실패: " + err.message);
       } finally {
         btn.disabled = false;
-        btn.innerHTML = `<i class="fa-solid fa-wand-magic-sparkles text-amber-300"></i> <span>증례 모의고사 시작</span>`;
+        btn.innerHTML = `<i class="fa-solid fa-wand-magic-sparkles text-amber-300"></i> <span>모의고사 시작</span>`;
       }
     }
 
@@ -536,14 +352,9 @@ ${sampleContext}
       document.getElementById('quizScoreText').innerText = `현재 맞힌 개수: ${quizScore}`;
 
       document.getElementById('quizBadgeChapter').innerText = q.chapter || '피부과학 제7판';
-
-      // 환자 증례 박스 렌더링
       document.getElementById('quizCaseVignette').innerText = q.caseVignette || '임상 증례가 제시되지 않았습니다.';
-
-      // 질문 제목
       document.getElementById('quizQuestionTitle').innerText = `Q${currentQuizIdx + 1}. ${q.question}`;
 
-      // 사진형 문항 갤러리 렌더링
       const gallery = document.getElementById('quizImageGallery');
       const photoBadge = document.getElementById('quizBadgePhoto');
 
@@ -564,7 +375,6 @@ ${sampleContext}
         gallery.innerHTML = '';
       }
 
-      // 5개 보기 렌더링
       const symbols = ['①', '②', '③', '④', '⑤'];
       const container = document.getElementById('quizChoiceList');
       container.innerHTML = q.choices.map((choice, idx) => `
@@ -621,318 +431,7 @@ ${sampleContext}
         renderCurrentQuestion();
       } else {
         const pct = Math.round((quizScore / currentQuizList.length) * 100);
-        alert(`🎉 증례 모의고사 종료!\n\n총 ${currentQuizList.length}문항 중 ${quizScore}문항 정답 (정답률: ${pct}%)\n오답 증례는 플래시카드에서 다시 한번 확인하세요!`);
-        document.getElementById('quizQuestionCard').classList.add('hidden');
-        document.getElementById('quizProgressHeader').classList.add('hidden');
-        document.getElementById('quizPlaceholder').classList.remove('hidden');
-      }
-    }
-
-    async function fetchGeminiModel(prompt, apiKey) {
-      const models = ["gemini-3-flash-preview", "gemini-3.5-flash", "gemini-3.1-flash-lite"];
-      for (const m of models) {
-        try {
-          const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${m}:generateContent?key=${apiKey}`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              contents: [{ role: "user", parts: [{ text: prompt }] }],
-              generationConfig: { maxOutputTokens: 8192 }
-            })
-          });
-          const data = await res.json();
-          if (data.candidates?.[0]?.content?.parts?.[0]?.text) {
-            return data.candidates[0].content.parts[0].text;
-          }
-        } catch (e) {
-          console.warn(`[${m}] 실패, 다음 모델로 대체:`, e);
-        }
-      }
-      throw new Error("AI 응답을 가져오지 못했습니다. API 키 상태를 확인해주세요.");
-    }
-
-    function zoomDirectImage(src) {
-      if (!src) return;
-      document.getElementById('zoomedImg').src = src;
-      document.getElementById('imageModal').classList.remove('hidden');
-    }
-
-    function closeImageZoom() {
-      document.getElementById('imageModal').classList.add('hidden');
-    }
-
-    window.onload = init;
-  </script>
-</body>
-</html>
-
-    const CHAPTERS = [
-      "CHAPTER 01 피부의 구조와 기능", "CHAPTER 02 피부조직병리학", "CHAPTER 03 피부의 증상, 징후와 진단",
-      "CHAPTER 04 피부 면역학", "CHAPTER 05 가려움증", "CHAPTER 06 유전피부질환", "CHAPTER 07 광의학",
-      "CHAPTER 08 물리적 피부질환과 스포츠피부질환", "CHAPTER 09 습진", "CHAPTER 10 직업피부질환",
-      "CHAPTER 11 약물발진, 홍반 및 두드러기", "CHAPTER 12 구진인설질환", "CHAPTER 13 수포질환",
-      "CHAPTER 14 감염피부질환", "CHAPTER 15 피부부속기질환", "CHAPTER 16 색소이상증", "CHAPTER 17 피부혈관질환",
-      "CHAPTER 18 결합조직질환", "CHAPTER 19 피하지방질환", "CHAPTER 20 점막질환", "CHAPTER 21 임신피부질환",
-      "CHAPTER 22 신생아피부질환", "CHAPTER 23 피부노화", "CHAPTER 24 결핍 질환, 대사이상, 포르피린증",
-      "CHAPTER 25 내분비질환, 피부점액증, 손발바닥각질피부증, 진피결합조직질환", "CHAPTER 26 모반과 종양",
-      "CHAPTER 27 피부질환의 치료", "CHAPTER 28 피부미용학"
-    ];
-
-    let db = null;
-    let loadedCards = [];
-    let currentQuizList = [];
-    let currentQuizIdx = 0;
-    let quizScore = 0;
-    let isAnswerSelected = false;
-
-    function initTheme() {
-      const savedTheme = localStorage.getItem('derm_theme') || 'dark';
-      if (savedTheme === 'light') {
-        document.getElementById('htmlRoot').classList.remove('dark');
-        document.getElementById('themeIcon').className = "fa-solid fa-sun";
-      } else {
-        document.getElementById('htmlRoot').classList.add('dark');
-        document.getElementById('themeIcon').className = "fa-solid fa-moon";
-      }
-    }
-
-    function toggleTheme() {
-      const isDark = document.getElementById('htmlRoot').classList.toggle('dark');
-      localStorage.setItem('derm_theme', isDark ? 'dark' : 'light');
-      document.getElementById('themeIcon').className = isDark ? "fa-solid fa-moon" : "fa-solid fa-sun";
-    }
-
-    function init() {
-      initTheme();
-
-      const select = document.getElementById('quizChapterSelect');
-      CHAPTERS.forEach(ch => {
-        select.innerHTML += `<option value="${ch}">${ch}</option>`;
-      });
-
-      try {
-        firebase.initializeApp(firebaseConfig);
-        db = firebase.firestore();
-
-        db.collection("derm_cards_7th").onSnapshot(snapshot => {
-          loadedCards = [];
-          snapshot.forEach(doc => loadedCards.push({ id: doc.id, ...doc.data() }));
-          document.getElementById('dbCardCountBadge').innerText = `등록된 카드: ${loadedCards.length}개`;
-        });
-      } catch (err) {
-        console.error(err);
-      }
-    }
-
-    function extractCardImages(card) {
-      const imgs = [];
-      if (Array.isArray(card.frontImages)) imgs.push(...card.frontImages);
-      if (Array.isArray(card.backImages)) imgs.push(...card.backImages);
-      if (card.frontImageBase64) imgs.push(card.frontImageBase64);
-      if (card.backImageBase64) imgs.push(card.backImageBase64);
-      if (card.imageBase64) imgs.push(card.imageBase64);
-      if (card.imageUrl) imgs.push(card.imageUrl);
-      return imgs.filter(src => src && src.trim() !== '');
-    }
-
-    async function startAiQuiz() {
-      const apiKey = localStorage.getItem('derm_gemini_api_key');
-      if (!apiKey) {
-        alert("메인 페이지에서 Gemini API 키를 먼저 등록해주세요!");
-        window.location.href = "index.html";
-        return;
-      }
-
-      const selectedCh = document.getElementById('quizChapterSelect').value;
-      const requestedCount = parseInt(document.getElementById('quizCountSelect').value, 10) || 5;
-
-      let targetCards = loadedCards;
-      if (selectedCh !== 'ALL') {
-        targetCards = loadedCards.filter(c => c.chapter === selectedCh);
-      }
-
-      if (targetCards.length === 0) {
-        alert("선택한 챕터에 등록된 카드가 없습니다. 카드를 먼저 등록해주세요!");
-        return;
-      }
-
-      const withPhotos = targetCards.filter(c => extractCardImages(c).length > 0);
-      const withoutPhotos = targetCards.filter(c => extractCardImages(c).length === 0);
-
-      withPhotos.sort(() => 0.5 - Math.random());
-      withoutPhotos.sort(() => 0.5 - Math.random());
-
-      const combinedPool = [...withPhotos, ...withoutPhotos].slice(0, Math.min(targetCards.length, Math.max(requestedCount, 8)));
-
-      const sampleContext = combinedPool.map((c, i) => {
-        const hasPhoto = extractCardImages(c).length > 0;
-        return `[소속번호 ${i}] ${c.chapter} ${hasPhoto ? '(★임상/병리 사진 첨부됨)' : ''}
-- 표제어/주제: ${c.front}
-- 핵심/해설: ${c.back}`;
-      }).join('\n\n');
-
-      // ★ 실제 전문의 1차 및 CME 스타일 증례 제시형(Clinical Vignette) 출제 프롬프트
-      const prompt = `당신은 대한민국 대한피부과학회 전문의 1차 및 2차 슬라이드 시험 출제위원장입니다.
-아래 제공된 응시자의 《피부과학 제7판》 카드노트 핵심 지식을 바탕으로, 실제 전문의 시험에 출제되는 고난도 임상 증례(Clinical Vignette) 및 CME 형식의 5지선다 객관식 총 ${requestedCount}문항을 출제하세요.
-
-[카드노트 지식 풀]
-${sampleContext}
-
-[출제 필수 원칙 - 실제 전문의 1차 & CME 표준 양식 준수]
-1. 총 정확히 ${requestedCount}문항을 출제할 것.
-2. 지문 구성 (Clinical Vignette):
-   - 각 문항은 반드시 환자의 성별/연령, 내원 기간, 호소 증상(소양증, 통증 등), 발생 부위 및 병변 양상(구진, 홍반, 인설, 수포, 궤양 등), 신체 진찰 및 병리 조직검사/면역형광검사 소견이 짜임새 있게 기술된 증례(Vignette)를 갖출 것.
-   - 예시: "52세 여자가 1개월 전부터 구강 점막의 미란과 체간의 이완성 수포를 주소로 내원하였다. 신체 진찰상 니콜스키 징후는 양성이었고, 병변부 조직검사상 기저층 직상부 극세포해리가 관찰되었다."
-   - 만약 소속번호에 '(★임상/병리 사진 첨부됨)' 표기가 있는 경우, 지문에 "(사진 1)과 같은 병변을 보이는...", "(사진 1)의 조직병리학적 소견을 특징으로 하는..."과 같이 사진을 판독해야 풀 수 있는 사진형 증례 문항으로 유기적으로 작성할 것.
-3. 질문 유형:
-   - "이 환자에서 가장 의심되는 질환은?"
-   - "이 질환의 발생 기전과 연관된 표적 자가항원(또는 돌연변이 유전자)은?"
-   - "이 환자에게 1차적으로 투여해야 할 가장 적절한 약제는?"
-   - "이 환자의 확진을 위해 시행할 직접면역형광검사(DIF) 소견으로 옳은 것은?"
-4. 보기는 ①부터 ⑤까지 5개로 구성하며, 감별 질환군에 속하는 전문의 수준의 정교하고 매력적인 오답 선지(Distractor)를 배치할 것.
-5. 반드시 아래 JSON 배열 포맷으로만 응답할 것 (마크다운 코드블록이나 다른 부연 설명 일체 제외):
-[
-  {
-    "cardIndex": 0,
-    "chapter": "챕터명",
-    "caseVignette": "환자 증례 본문 (나이, 성별, 증상, 병리/진찰 소견 등 상세 서술)",
-    "question": "구체적인 질문 문장",
-    "choices": ["선지 1", "선지 2", "선지 3", "선지 4", "선지 5"],
-    "answerIndex": 0,
-    "explanation": "제7판 교과서 기준 증례 판독 및 정답/오답 상세 해설"
-  }
-]`;
-
-      const btn = document.getElementById('btnGenerateQuiz');
-      btn.disabled = true;
-      btn.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin"></i> 증례 구성 중...`;
-
-      try {
-        const rawJson = await fetchGeminiModel(prompt, apiKey);
-        const cleaned = rawJson.replace(/```json/gi, '').replace(/```/g, '').trim();
-        const parsed = JSON.parse(cleaned);
-
-        if (!Array.isArray(parsed) || parsed.length === 0) throw new Error("문항 파싱 오류");
-
-        currentQuizList = parsed.map(q => {
-          const matchedCard = combinedPool[q.cardIndex] || combinedPool[0];
-          return {
-            ...q,
-            images: extractCardImages(matchedCard)
-          };
-        });
-
-        currentQuizIdx = 0;
-        quizScore = 0;
-
-        document.getElementById('quizPlaceholder').classList.add('hidden');
-        document.getElementById('quizQuestionCard').classList.remove('hidden');
-        document.getElementById('quizProgressHeader').classList.remove('hidden');
-
-        renderCurrentQuestion();
-      } catch (err) {
-        alert("문제 출제 실패: " + err.message);
-      } finally {
-        btn.disabled = false;
-        btn.innerHTML = `<i class="fa-solid fa-wand-magic-sparkles text-amber-300"></i> <span>증례 모의고사 시작</span>`;
-      }
-    }
-
-    function renderCurrentQuestion() {
-      const q = currentQuizList[currentQuizIdx];
-      if (!q) return;
-
-      isAnswerSelected = false;
-      document.getElementById('quizIndexText').innerText = `문항 ${currentQuizIdx + 1} / ${currentQuizList.length}`;
-      document.getElementById('quizScoreText').innerText = `현재 맞힌 개수: ${quizScore}`;
-
-      document.getElementById('quizBadgeChapter').innerText = q.chapter || '피부과학 제7판';
-
-      // 환자 증례 박스 렌더링
-      document.getElementById('quizCaseVignette').innerText = q.caseVignette || '임상 증례가 제시되지 않았습니다.';
-
-      // 질문 제목
-      document.getElementById('quizQuestionTitle').innerText = `Q${currentQuizIdx + 1}. ${q.question}`;
-
-      // 사진형 문항 갤러리 렌더링
-      const gallery = document.getElementById('quizImageGallery');
-      const photoBadge = document.getElementById('quizBadgePhoto');
-
-      if (q.images && q.images.length > 0) {
-        photoBadge.classList.remove('hidden');
-        gallery.classList.remove('hidden');
-        gallery.innerHTML = q.images.map(src => `
-          <div class="relative group rounded-xl overflow-hidden border border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-slate-900 flex items-center justify-center p-1">
-            <img src="${src}" class="max-h-44 rounded-lg object-contain cursor-zoom-in hover:opacity-95 transition active:scale-95" onclick="zoomDirectImage('${src}')">
-            <span class="absolute bottom-1 right-1 bg-black/75 text-white text-[9px] px-1.5 py-0.5 rounded backdrop-blur pointer-events-none">
-              <i class="fa-solid fa-magnifying-glass-plus"></i> 사진 확대
-            </span>
-          </div>
-        `).join('');
-      } else {
-        photoBadge.classList.add('hidden');
-        gallery.classList.add('hidden');
-        gallery.innerHTML = '';
-      }
-
-      // 5개 보기 렌더링
-      const symbols = ['①', '②', '③', '④', '⑤'];
-      const container = document.getElementById('quizChoiceList');
-      container.innerHTML = q.choices.map((choice, idx) => `
-        <button onclick="handleChoiceSelect(${idx})" id="choiceBtn_${idx}" class="w-full text-left p-4 rounded-2xl bg-slate-50 dark:bg-slate-950/70 hover:bg-slate-100 dark:hover:bg-slate-800/80 border border-slate-200 dark:border-slate-800 text-xs sm:text-sm font-medium text-slate-800 dark:text-slate-200 transition flex items-start gap-3">
-          <span class="font-bold text-emerald-600 dark:text-emerald-400 text-sm">${symbols[idx]}</span>
-          <span class="leading-relaxed flex-1">${choice}</span>
-        </button>
-      `).join('');
-
-      document.getElementById('quizExplanationBox').classList.add('hidden');
-      document.getElementById('btnNextStep').classList.add('hidden');
-    }
-
-    function handleChoiceSelect(selectedIdx) {
-      if (isAnswerSelected) return;
-      isAnswerSelected = true;
-
-      const q = currentQuizList[currentQuizIdx];
-      const isCorrect = (selectedIdx === q.answerIndex);
-      if (isCorrect) quizScore++;
-
-      document.getElementById('quizScoreText').innerText = `현재 맞힌 개수: ${quizScore}`;
-
-      q.choices.forEach((_, idx) => {
-        const btn = document.getElementById(`choiceBtn_${idx}`);
-        btn.disabled = true;
-
-        if (idx === q.answerIndex) {
-          btn.className = "w-full text-left p-4 rounded-2xl bg-emerald-50 dark:bg-emerald-950/80 border-2 border-emerald-500 text-xs sm:text-sm font-bold text-emerald-900 dark:text-emerald-200 transition flex items-start gap-3";
-          btn.innerHTML += `<i class="fa-solid fa-circle-check text-emerald-500 text-base ml-auto mt-0.5"></i>`;
-        } else if (idx === selectedIdx && !isCorrect) {
-          btn.className = "w-full text-left p-4 rounded-2xl bg-rose-50 dark:bg-rose-950/80 border-2 border-rose-500 text-xs sm:text-sm font-bold text-rose-900 dark:text-rose-200 transition flex items-start gap-3";
-          btn.innerHTML += `<i class="fa-solid fa-circle-xmark text-rose-500 text-base ml-auto mt-0.5"></i>`;
-        } else {
-          btn.classList.add('opacity-40');
-        }
-      });
-
-      document.getElementById('quizExplanationContent').innerText = q.explanation;
-      document.getElementById('quizExplanationBox').classList.remove('hidden');
-
-      const nextBtn = document.getElementById('btnNextStep');
-      if (currentQuizIdx < currentQuizList.length - 1) {
-        nextBtn.innerHTML = `<span>다음 문항</span> <i class="fa-solid fa-arrow-right"></i>`;
-      } else {
-        nextBtn.innerHTML = `<span>모의고사 결과 보기</span> <i class="fa-solid fa-trophy"></i>`;
-      }
-      nextBtn.classList.remove('hidden');
-    }
-
-    function nextQuizStep() {
-      if (currentQuizIdx < currentQuizList.length - 1) {
-        currentQuizIdx++;
-        renderCurrentQuestion();
-      } else {
-        const pct = Math.round((quizScore / currentQuizList.length) * 100);
-        alert(`🎉 증례 모의고사 종료!\n\n총 ${currentQuizList.length}문항 중 ${quizScore}문항 정답 (정답률: ${pct}%)\n오답 증례는 플래시카드에서 다시 한번 확인하세요!`);
+        alert(`🎉 증례 모의고사 종료!\n\n총 ${currentQuizList.length}문항 중 ${quizScore}문항 정답 (정답률: ${pct}%)\n오답 증례는 플래시카드에서 다시 확인하세요!`);
         document.getElementById('quizQuestionCard').classList.add('hidden');
         document.getElementById('quizProgressHeader').classList.add('hidden');
         document.getElementById('quizPlaceholder').classList.remove('hidden');
