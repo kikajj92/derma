@@ -110,7 +110,7 @@
   <!-- MAIN VIEW -->
   <main class="max-w-5xl w-full mx-auto px-4 py-4 flex-1">
 
-    <!-- ==================== TAB 1: STUDY FLASHCARD ==================== -->
+    <!-- TAB 1: STUDY FLASHCARD -->
     <div id="tabContentStudy" class="space-y-4">
       <div class="grid grid-cols-1 sm:grid-cols-12 gap-2 bg-white dark:bg-slate-900 p-3 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
         <div class="sm:col-span-5">
@@ -139,7 +139,7 @@
       <!-- 3D Flashcard Box with Loading Indicator -->
       <div id="cardTouchArea" class="relative perspective-1000 w-full min-h-[420px] sm:min-h-[480px] select-none cursor-pointer">
         
-        <!-- ★ 로딩 중 오버레이 (카드 수신 완료 시 자동 소멸) -->
+        <!-- 로딩 오버레이 -->
         <div id="cardLoadingOverlay" class="absolute inset-0 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md z-30 rounded-3xl flex flex-col items-center justify-center p-6 space-y-4 transition-opacity duration-300 shadow-xl border border-slate-200/80 dark:border-slate-800">
           <div class="w-12 h-12 border-4 border-indigo-200 dark:border-indigo-900 border-t-indigo-600 rounded-full animate-spin"></div>
           <div class="text-center space-y-1">
@@ -464,7 +464,7 @@
     // =================================================================
     // [중요] 본인의 Firebase 설정 키를 여기에 그대로 유지하세요!
     // =================================================================
-    <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ko" class="dark" id="htmlRoot">
 <head>
   <meta charset="UTF-8">
@@ -576,7 +576,7 @@
   <!-- MAIN VIEW -->
   <main class="max-w-5xl w-full mx-auto px-4 py-4 flex-1">
 
-    <!-- ==================== TAB 1: STUDY FLASHCARD ==================== -->
+    <!-- TAB 1: STUDY FLASHCARD -->
     <div id="tabContentStudy" class="space-y-4">
       <div class="grid grid-cols-1 sm:grid-cols-12 gap-2 bg-white dark:bg-slate-900 p-3 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
         <div class="sm:col-span-5">
@@ -605,7 +605,7 @@
       <!-- 3D Flashcard Box with Loading Indicator -->
       <div id="cardTouchArea" class="relative perspective-1000 w-full min-h-[420px] sm:min-h-[480px] select-none cursor-pointer">
         
-        <!-- ★ 로딩 중 오버레이 (카드 수신 완료 시 자동 소멸) -->
+        <!-- 로딩 오버레이 -->
         <div id="cardLoadingOverlay" class="absolute inset-0 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md z-30 rounded-3xl flex flex-col items-center justify-center p-6 space-y-4 transition-opacity duration-300 shadow-xl border border-slate-200/80 dark:border-slate-800">
           <div class="w-12 h-12 border-4 border-indigo-200 dark:border-indigo-900 border-t-indigo-600 rounded-full animate-spin"></div>
           <div class="text-center space-y-1">
@@ -1232,24 +1232,20 @@
         firebase.initializeApp(firebaseConfig);
         db = firebase.firestore();
 
-        // ★ 오프라인 Persistence 활성화 (로컬 캐시로 초고속 0.1초 로딩 구현)
         db.enablePersistence({ synchronizeTabs: true }).catch(err => {
           console.warn('Firestore persistence warning:', err.code);
         });
 
         document.getElementById('syncBadgeText').innerText = "동기화 중...";
 
-        // orderBy를 없애서 필드 누락 카드가 사라지는 현상 방지
         db.collection("derm_cards_7th").onSnapshot((snapshot) => {
           cards = [];
           snapshot.forEach(doc => {
             cards.push({ id: doc.id, ...doc.data() });
           });
 
-          // 자바스크립트 레벨에서 최신순 정렬
           cards.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
 
-          // ★ 수신 완료 시 로딩 오버레이 페이드아웃
           isInitialLoad = false;
           const overlay = document.getElementById('cardLoadingOverlay');
           if (overlay) {
@@ -2157,24 +2153,20 @@
         firebase.initializeApp(firebaseConfig);
         db = firebase.firestore();
 
-        // ★ 오프라인 Persistence 활성화 (로컬 캐시로 초고속 0.1초 로딩 구현)
         db.enablePersistence({ synchronizeTabs: true }).catch(err => {
           console.warn('Firestore persistence warning:', err.code);
         });
 
         document.getElementById('syncBadgeText').innerText = "동기화 중...";
 
-        // orderBy를 없애서 필드 누락 카드가 사라지는 현상 방지
         db.collection("derm_cards_7th").onSnapshot((snapshot) => {
           cards = [];
           snapshot.forEach(doc => {
             cards.push({ id: doc.id, ...doc.data() });
           });
 
-          // 자바스크립트 레벨에서 최신순 정렬
           cards.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
 
-          // ★ 수신 완료 시 로딩 오버레이 페이드아웃
           isInitialLoad = false;
           const overlay = document.getElementById('cardLoadingOverlay');
           if (overlay) {
